@@ -171,7 +171,6 @@
             cargarProductos();
         });
 
-        // Convierte el enlace compartido de Google Drive en un enlace de imagen directa
         function transformarEnlaceDrive(urlOriginal) {
             if (!urlOriginal) return '';
             let match = urlOriginal.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -182,7 +181,7 @@
             if (match && match[1]) {
                 return `https://lh3.googleusercontent.com/d/${match[1]}`;
             }
-            return urlOriginal; // Si ya viene limpio o es otro servidor
+            return urlOriginal;
         }
 
         function guardarLogoDrive() {
