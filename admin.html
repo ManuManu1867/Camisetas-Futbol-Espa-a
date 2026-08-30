@@ -3,427 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Vista Previa</title>
+    <title>Panel de Administración - Tienda</title>
     <style>
         :root {
             --primary: #111827;
             --accent: #2563eb;
-            --bg: #ffffff;
-            --surface: #f9fafb;
+            --bg: #f3f4f6;
+            --surface: #ffffff;
             --text: #111827;
             --text-muted: #6b7280;
             --border: #e5e7eb;
-            --danger: #ef4444;
-            --warning: #f59e0b;
             --radius: 8px;
+            --success: #10b981;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px; }
 
-        /* Barra de navegación unificada estilo Nike */
-        nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 40px; border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px); z-index: 100; flex-wrap: wrap; gap: 15px;
-        }
-
-        .nav-brand { display: flex; align-items: center; gap: 15px; }
-        .logo-container { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
-        .logo-img { width: 100%; height: 100%; object-fit: contain; }
-
-        .admin-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .container { max-width: 800px; margin: 0 auto; background: var(--surface); padding: 30px; border-radius: var(--radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        .input-logo {
-            padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius);
-            font-size: 0.85rem; width: 220px; outline: none;
-        }
+        h1 { font-size: 1.5rem; margin-bottom: 20px; font-weight: 800; color: var(--primary); }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        
+        small { display: block; color: var(--text-muted); margin-top: 5px; font-size: 0.8rem; }
 
-        .btn-admin {
+        .btn {
             background-color: var(--primary); color: white; border: none;
-            padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
-            cursor: pointer; transition: background 0.2s;
+            padding: 12px 20px; border-radius: var(--radius); font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: background 0.2s; width: 100%;
         }
-        .btn-admin:hover { background-color: #374151; }
+        .btn:hover { background-color: #374151; }
+        .btn-success { background-color: var(--success); margin-top: 10px; }
+        .btn-success:hover { background-color: #059669; }
 
-        .btn-lanzar {
-            background-color: #16a34a; color: white; border: none;
-            padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
-            cursor: pointer; transition: background 0.2s;
-        }
-        .btn-lanzar:hover { background-color: #15803d; }
-
-        .nav-filtros { display: flex; gap: 10px; overflow-x: auto; padding: 5px 0; }
-        .btn-filtro {
-            background: transparent; border: none; padding: 8px 16px;
-            font-size: 0.95rem; font-weight: 600; color: var(--text-muted);
-            cursor: pointer; border-radius: 20px; transition: all 0.2s ease;
-        }
-        .btn-filtro:hover, .btn-filtro.activo {
-            background: var(--primary); color: white;
-        }
-
-        /* Banner de Categoría */
-        .hero-banner {
-            max-width: 1400px; margin: 30px auto 20px auto; padding: 0 20px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-        }
-        .hero-banner h1 { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
-
-        /* Contenedor del Catálogo */
-        .catalogo {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px; max-width: 1400px; margin: 0 auto; padding: 0 20px;
-        }
-
-        .tarjeta {
-            background-color: var(--surface); border-radius: var(--radius);
-            overflow: hidden; display: flex; flex-direction: column;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid transparent;
-        }
-        .tarjeta:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 20px -10px rgba(0,0,0,0.1);
-            border-color: var(--border);
-        }
-
-        .visor-imagen {
-            position: relative; background-color: #f3f4f6; height: 350px;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
-        .visor-imagen img.img-principal { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-        .tarjeta:hover .img-principal { transform: scale(1.03); }
-
-        .categoria-badge {
-            position: absolute; top: 15px; left: 15px; background-color: white;
-            color: var(--text); padding: 4px 10px; border-radius: 4px;
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .miniaturas { display: flex; gap: 6px; padding: 12px 15px 0 15px; overflow-x: auto; }
-        .miniatura {
-            width: 40px; height: 40px; border-radius: 4px; object-fit: cover;
-            cursor: pointer; border: 1px solid var(--border); background-color: white;
-            opacity: 0.7; transition: opacity 0.2s;
-        }
-        .miniatura:hover, .miniatura.activa { opacity: 1; border-color: var(--primary); }
-
-        .tarjeta-info { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
-        .tarjeta-info h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-        .talla { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
-        
-        .footer-card { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .precio { font-size: 1.15rem; font-weight: 700; color: var(--text); }
-        
-        .card-actions { display: flex; gap: 8px; }
-        .btn-editar { background-color: var(--warning); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
-        .btn-eliminar { background-color: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
-
-        /* Modal */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000;
-            justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-content {
-            background-color: var(--bg); width: 100%; max-width: 500px;
-            border-radius: var(--radius); padding: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            max-height: 90vh; overflow-y: auto; border: 1px solid var(--border);
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-cerrar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; outline: none; }
-        .input-group-drive { display: flex; gap: 8px; margin-bottom: 8px; }
-        .btn-add-url { background: #f3f4f6; border: 1px solid var(--border); padding: 0 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .lista-urls { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 100px; overflow-y: auto; }
-        .url-item { display: flex; justify-content: space-between; align-items: center; background: #f9fafb; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; border: 1px solid var(--border); }
-        .url-item button { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; }
+        .mensaje { margin-top: 15px; padding: 12px; border-radius: var(--radius); text-align: center; font-weight: 600; display: none; }
+        .mensaje.exito { background-color: #d1fae5; color: #065f46; display: block; }
+        .mensaje.error { background-color: #fee2e2; color: #991b1b; display: block; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="nav-brand">
-            <div class="logo-container" id="logoContainer">
-                <h2>ADMIN</h2>
+    <div class="container">
+        <h1>Panel de Administración (Google Cloud)</h1>
+        
+        <form id="productForm" onsubmit="guardarProducto(event)">
+            <div class="form-group">
+                <label for="titulo">Título del Producto</label>
+                <input type="text" id="titulo" required placeholder="Ej: España 1ª Equipación 2026">
             </div>
-            <div class="admin-controls">
-                <input type="text" id="inputLogoUrl" class="input-logo" placeholder="Enlace Google Drive del Logo">
-                <button class="btn-admin" onclick="guardarLogoDrive()">Guardar Logo</button>
+
+            <div class="form-group">
+                <label for="categoria">Categoría</label>
+                <select id="categoria" required>
+                    <option value="Selecciones">Selecciones</option>
+                    <option value="Clubes">Clubes</option>
+                    <option value="Retro">Retro</option>
+                    <option value="Otros">Otros</option>
+                </select>
             </div>
-        </div>
-        <div class="nav-filtros">
-            <button class="btn-filtro activo" onclick="filtrarAdmin('todas', this)">Todo</button>
-            <button class="btn-filtro" onclick="filtrarAdmin('Selecciones', this)">Selecciones</button>
-            <button class="btn-filtro" onclick="filtrarAdmin('Clubes', this)">Clubes</button>
-            <button class="btn-filtro" onclick="filtrarAdmin('Retro', this)">Retro</button>
-            <button class="btn-filtro" onclick="filtrarAdmin('Otros', this)">Otros</button>
-        </div>
-    </nav>
 
-    <div class="hero-banner">
-        <h1 id="tituloAdmin">Panel de Borradores</h1>
-        <div>
-            <button class="btn-admin" onclick="abrirModalCrear()">+ Crear Producto</button>
-            <button class="btn-lanzar" onclick="publicarAlFrontend()">🚀 Lanzar a Tienda</button>
-        </div>
-    </div>
-
-    <div class="catalogo" id="catalogoAdmin"></div>
-
-    <!-- Modal Formulario -->
-    <div class="modal" id="modalForm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalFormTitulo" style="font-size: 1.2rem; font-weight: 700;">Añadir Producto</h2>
-                <button class="btn-cerrar" onclick="cerrarModal()">&times;</button>
+            <div class="form-group">
+                <label for="precio">Precio (€)</label>
+                <input type="number" step="0.01" id="precio" required placeholder="25.00">
             </div>
-            <form id="formCamiseta">
-                <input type="hidden" id="editProductoId" value="">
-                <div class="form-group">
-                    <label for="titulo">Nombre del Producto:</label>
-                    <input type="text" id="titulo" required placeholder="Ej: España 1ra Equipación 2026">
-                </div>
-                <div class="form-group">
-                    <label for="categoria">Categoría:</label>
-                    <select id="categoria" required>
-                        <option value="Selecciones">Selecciones</option>
-                        <option value="Clubes">Clubes</option>
-                        <option value="Retro">Retro</option>
-                        <option value="Otros">Otros</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="precio">Precio (€):</label>
-                    <input type="number" step="0.01" id="precio" required placeholder="Ej: 25">
-                </div>
-                <div class="form-group">
-                    <label for="talla">Tallas:</label>
-                    <input type="text" id="talla" required placeholder="Ej: S, M, L, XL">
-                </div>
-                <div class="form-group">
-                    <label>Fotos de Google Drive:</label>
-                    <div class="input-group-drive">
-                        <input type="text" id="inputUrlFoto" placeholder="Pega el enlace de compartir de Drive">
-                        <button type="button" class="btn-add-url" onclick="agregarUrlFoto()">Añadir</button>
-                    </div>
-                    <div class="lista-urls" id="listaUrlsContainer"></div>
-                </div>
-                <button type="submit" class="btn-admin" style="width: 100%; padding: 12px; border-radius: 6px; margin-top: 10px;">Guardar Borrador</button>
-            </form>
-        </div>
+
+            <div class="form-group">
+                <label for="talla">Tallas Disponibles</label>
+                <input type="text" id="talla" required placeholder="XS, S, M, L, XL">
+            </div>
+
+            <div class="form-group">
+                <label for="imagenes">Enlaces de Google Drive (Sepáralos con comas si son varios)</label>
+                <textarea id="imagenes" rows="4" required placeholder="https://drive.google.com/file/d/.../view?usp=sharing, https://drive.google.com/..."></textarea>
+                <small>Pega los enlaces compartidos de Google Drive de tus fotos. Si hay varios, pon una coma entre ellos.</small>
+            </div>
+
+            <button type="submit" class="btn" id="btnGuardar">🚀 Lanzar a Tienda (Guardar en Google Sheet)</button>
+        </form>
+
+        <div id="mensajeEstado" class="mensaje"></div>
     </div>
 
     <script>
-        const form = document.getElementById('formCamiseta');
-        const catalogo = document.getElementById('catalogoAdmin');
-        const modal = document.getElementById('modalForm');
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxGW9FSTwk-n_kKSpuglJjEVAps2DJ7tEeoZrW823KUXTukMbNUtA3GunYn9OaTtDCcnw/exec';
 
-        const DRAFTS_KEY = 'camisetas_drafts_drive';
-        const PUBLIC_KEY = 'camisetas_public_drive';
-        const LOGO_DRAFT_KEY = 'logo_draft_drive';
-        const LOGO_PUBLIC_KEY = 'logo_public_drive';
-
-        let imagenesUrlsTemporal = [];
-        let categoriaActual = 'todas';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarLogo();
-            cargarProductosAdmin();
-        });
-
+        // Función auxiliar para transformar automáticamente cualquier enlace de Drive al formato de imagen directa
         function transformarEnlaceDrive(urlOriginal) {
-            if (!urlOriginal) return '';
-            let match = urlOriginal.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            match = urlOriginal.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            return urlOriginal;
-        }
-
-        function guardarLogoDrive() {
-            const urlRaw = document.getElementById('inputLogoUrl').value.trim();
-            const urlLimpia = transformarEnlaceDrive(urlRaw);
-            if (urlLimpia) {
-                localStorage.setItem(LOGO_DRAFT_KEY, urlLimpia);
-                renderizarLogo(urlLimpia);
-                alert("Logo actualizado en borradores.");
-            }
-        }
-
-        function cargarLogo() {
-            const logoGuardado = localStorage.getItem(LOGO_DRAFT_KEY);
-            if (logoGuardado) renderizarLogo(logoGuardado);
-        }
-
-        function renderizarLogo(src) {
-            document.getElementById('logoContainer').innerHTML = `<img src="${src}" class="logo-img">`;
-        }
-
-        function agregarUrlFoto() {
-            const input = document.getElementById('inputUrlFoto');
-            const urlRaw = input.value.trim();
-            if (!urlRaw) return;
-            imagenesUrlsTemporal.push(transformarEnlaceDrive(urlRaw));
-            input.value = '';
-            renderizarListaUrls();
-        }
-
-        function renderizarListaUrls() {
-            const container = document.getElementById('listaUrlsContainer');
-            container.innerHTML = '';
-            imagenesUrlsTemporal.forEach((url, index) => {
-                const div = document.createElement('div');
-                div.className = 'url-item';
-                div.innerHTML = `<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 350px;">${url}</span><button type="button" onclick="borrarUrlFoto(${index})">X</button>`;
-                container.appendChild(div);
-            });
-        }
-
-        function borrarUrlFoto(index) {
-            imagenesUrlsTemporal.splice(index, 1);
-            renderizarListaUrls();
-        }
-
-        function abrirModalCrear() {
-            document.getElementById('modalFormTitulo').innerText = 'Añadir Producto';
-            document.getElementById('editProductoId').value = '';
-            form.reset();
-            imagenesUrlsTemporal = [];
-            document.getElementById('listaUrlsContainer').innerHTML = '';
-            modal.style.display = 'flex';
-        }
-
-        function abrirModalEditar(id) {
-            let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
-            const producto = productos.find(p => p.id === id);
-            if (!producto) return;
-
-            document.getElementById('modalFormTitulo').innerText = 'Editar Producto';
-            document.getElementById('editProductoId').value = producto.id;
-            document.getElementById('titulo').value = producto.titulo;
-            document.getElementById('categoria').value = producto.categoria;
-            document.getElementById('precio').value = producto.precio;
-            document.getElementById('talla').value = producto.talla;
-
-            imagenesUrlsTemporal = [...producto.imagenes];
-            renderizarListaUrls();
-            modal.style.display = 'flex';
-        }
-
-        function cerrarModal() { modal.style.display = 'none'; }
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (imagenesUrlsTemporal.length === 0) {
-                alert('Añade al menos una imagen.');
-                return;
+            let urlLimpia = urlOriginal.trim();
+            let id = '';
+            
+            if (urlLimpia.includes('/d/')) {
+                let match = urlLimpia.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) id = match[1];
+            } else if (urlLimpia.includes('id=')) {
+                let match = urlLimpia.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) id = match[1];
             }
 
-            const editId = document.getElementById('editProductoId').value;
-            const productoData = {
-                id: editId ? parseInt(editId) : Date.now(),
-                titulo: document.getElementById('titulo').value.trim(),
+            if (id) {
+                return `https://lh3.googleusercontent.com/d/${id}`;
+            }
+            return urlLimpia;
+        }
+
+        async function guardarProducto(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btnGuardar');
+            const mensaje = document.getElementById('mensajeEstado');
+            btn.disabled = true;
+            btn.innerText = "Guardando en la nube...";
+            mensaje.className = "mensaje";
+
+            // Procesar las imágenes introducidas (separadas por comas) y transformarlas a enlaces directos de Google
+            const inputImgs = document.getElementById('imagenes').value;
+            const arrayRaw = inputImgs.split(',');
+            const arrayTransformado = arrayRaw.map(img => transformarEnlaceDrive(img));
+            const imagenesFinalesStr = arrayTransformado.join(',');
+
+            const nuevoProducto = {
+                id: new Date().getTime(),
+                titulo: document.getElementById('titulo').value,
                 categoria: document.getElementById('categoria').value,
-                precio: parseFloat(document.getElementById('precio').value).toFixed(2),
-                talla: document.getElementById('talla').value.trim(),
-                imagenes: [...imagenesUrlsTemporal]
+                precio: document.getElementById('precio').value,
+                talla: document.getElementById('talla').value,
+                imagenes: imagenesFinalesStr
             };
 
-            let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
-            if (editId) {
-                const idx = productos.findIndex(p => p.id === productoData.id);
-                if (idx !== -1) productos[idx] = productoData;
-            } else {
-                productos.push(productoData);
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Necesario para Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(nuevoProducto)
+                });
+
+                mensaje.innerText = "¡Producto lanzado a la tienda con éxito! Ya se ve en el móvil.";
+                mensaje.className = "mensaje exito";
+                document.getElementById('productForm').reset();
+            } catch (error) {
+                console.error("Error:", error);
+                mensaje.innerText = "Error al guardar el producto. Inténtalo de nuevo.";
+                mensaje.className = "mensaje error";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "🚀 Lanzar a Tienda (Guardar en Google Sheet)";
             }
-            localStorage.setItem(DRAFTS_KEY, JSON.stringify(productos));
-            cargarProductosAdmin();
-            cerrarModal();
-        });
-
-        function cargarProductosAdmin() {
-            catalogo.innerHTML = '';
-            let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
-
-            if (categoriaActual !== 'todas') {
-                productos = productos.filter(p => p.categoria === categoriaActual);
-            }
-
-            if (productos.length === 0) {
-                catalogo.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No hay borradores en esta categoría.</div>`;
-                return;
-            }
-
-            productos.forEach(producto => {
-                const tarjeta = document.createElement('div');
-                tarjeta.classList.add('tarjeta');
-
-                let miniaturasHTML = '';
-                if (producto.imagenes && producto.imagenes.length > 1) {
-                    miniaturasHTML = `<div class="miniaturas">`;
-                    producto.imagenes.forEach((imgSrc, index) => {
-                        miniaturasHTML += `<img src="${imgSrc}" class="miniatura ${index === 0 ? 'activa' : ''}" onclick="cambiarImagenAdmin(${producto.id}, '${imgSrc}', this)">`;
-                    });
-                    miniaturasHTML += `</div>`;
-                }
-
-                tarjeta.innerHTML = `
-                    <div class="visor-imagen">
-                        <span class="categoria-badge">${producto.categoria}</span>
-                        <img src="${producto.imagenes[0]}" class="img-principal" id="img-main-${producto.id}">
-                    </div>
-                    ${miniaturasHTML}
-                    <div class="tarjeta-info">
-                        <h3>${producto.titulo}</h3>
-                        <div class="talla">Tallas: ${producto.talla}</div>
-                        <div class="footer-card">
-                            <div class="precio">${producto.precio} €</div>
-                            <div class="card-actions">
-                                <button class="btn-editar" onclick="abrirModalEditar(${producto.id})">Editar</button>
-                                <button class="btn-eliminar" onclick="eliminarProducto(${producto.id})">Eliminar</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                catalogo.appendChild(tarjeta);
-            });
-        }
-
-        function cambiarImagenAdmin(id, nuevaSrc, elementoThumb) {
-            document.getElementById(`img-main-${id}`).src = nuevaSrc;
-            const tarjeta = elementoThumb.closest('.tarjeta');
-            tarjeta.querySelectorAll('.miniatura').forEach(thumb => thumb.classList.remove('activa'));
-            elementoThumb.classList.add('activa');
-        }
-
-        function eliminarProducto(id) {
-            if(!confirm('¿Estás seguro de eliminar este borrador?')) return;
-            let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
-            productos = productos.filter(p => p.id !== id);
-            localStorage.setItem(DRAFTS_KEY, JSON.stringify(productos));
-            cargarProductosAdmin();
-        }
-
-        function filtrarAdmin(cat, botonElemento) {
-            categoriaActual = cat;
-            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
-            botonElemento.classList.add('activo');
-            document.getElementById('tituloAdmin').innerText = cat === 'todas' ? 'Panel de Borradores' : cat;
-            cargarProductosAdmin();
-        }
-
-        function publicarAlFrontend() {
-            const borradores = localStorage.getItem(DRAFTS_KEY) || '[]';
-            localStorage.setItem(PUBLIC_KEY, borradores);
-            const logoDraft = localStorage.getItem(LOGO_DRAFT_KEY);
-            if (logoDraft) localStorage.setItem(LOGO_PUBLIC_KEY, logoDraft);
-            alert('🚀 ¡Lanzamiento completado! Los cambios se han sincronizado con la tienda oficial.');
         }
     </script>
 </body>
