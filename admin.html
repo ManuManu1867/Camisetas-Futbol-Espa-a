@@ -66,7 +66,6 @@
         }
         .btn-guardar:hover { background: #15803d; }
 
-        /* Estilos de la Previsualización */
         .preview-container {
             display: flex; flex-direction: column; gap: 15px; justify-content: center;
         }
@@ -104,7 +103,6 @@
 <body>
 
     <div class="admin-wrapper">
-        <!-- Formulario -->
         <div class="admin-card">
             <h1>Panel de Administración</h1>
             
@@ -114,7 +112,6 @@
             </div>
 
             <form onsubmit="guardarElemento(event)">
-                <!-- Campos Camiseta -->
                 <div id="camposCamiseta">
                     <div class="form-group">
                         <label>Título de la Camiseta:</label>
@@ -142,7 +139,6 @@
                     </div>
                 </div>
 
-                <!-- Campos Parche -->
                 <div id="camposParche" style="display: none;">
                     <div class="form-group">
                         <label>Nombre del Parche:</label>
@@ -166,12 +162,9 @@
             </form>
         </div>
 
-        <!-- Previsualización -->
         <div class="preview-container">
             <div class="preview-title">👁️ Previsualización en vivo</div>
-            <div id="previewBox">
-                <!-- Se llena con JS -->
-            </div>
+            <div id="previewBox"></div>
         </div>
     </div>
 
