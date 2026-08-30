@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Tienda</title>
+    <title>Panel de Administración - Vista Previa</title>
     <style>
         :root {
             --primary: #111827;
@@ -20,16 +20,27 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding: 20px; }
 
-        .container { max-width: 800px; margin: 0 auto; background: var(--surface); padding: 30px; border-radius: var(--radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .admin-layout {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr; gap: 30px;
+        }
+        @media (min-width: 900px) {
+            .admin-layout { grid-template-columns: 1fr 400px; }
+        }
+
+        .panel-container, .preview-container {
+            background: var(--surface); padding: 30px; border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 { font-size: 1.4rem; margin-bottom: 20px; font-weight: 800; color: var(--primary); }
         
-        h1 { font-size: 1.5rem; margin-bottom: 20px; font-weight: 800; color: var(--primary); }
-        
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
         input, select, textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 1rem; outline: none; transition: border-color 0.2s; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent); }
         
-        small { display: block; color: var(--text-muted); margin-top: 5px; font-size: 0.8rem; }
+        small { display: block; color: var(--text-muted); margin-top: 4px; font-size: 0.75rem; }
 
         .btn {
             background-color: var(--primary); color: white; border: none;
@@ -37,62 +48,111 @@
             cursor: pointer; transition: background 0.2s; width: 100%;
         }
         .btn:hover { background-color: #374151; }
-        .btn-success { background-color: var(--success); margin-top: 10px; }
-        .btn-success:hover { background-color: #059669; }
-
+        
         .mensaje { margin-top: 15px; padding: 12px; border-radius: var(--radius); text-align: center; font-weight: 600; display: none; }
         .mensaje.exito { background-color: #d1fae5; color: #065f46; display: block; }
         .mensaje.error { background-color: #fee2e2; color: #991b1b; display: block; }
+
+        /* Estilos de la tarjeta de Vista Previa idénticos a la tienda */
+        .tarjeta-preview {
+            background-color: #f9fafb; border-radius: var(--radius);
+            overflow: hidden; display: flex; flex-direction: column;
+            border: 1px solid var(--border); margin-top: 10px;
+        }
+        .visor-imagen-prev {
+            position: relative; background-color: #f3f4f6; height: 280px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .visor-imagen-prev img { width: 100%; height: 100%; object-fit: cover; }
+        .categoria-badge-prev {
+            position: absolute; top: 10px; left: 10px; background-color: white;
+            color: var(--text); padding: 4px 8px; border-radius: 4px;
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .tarjeta-info-prev { padding: 15px; display: flex; flex-direction: column; }
+        .tarjeta-info-prev h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+        .talla-prev { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+        .footer-card-prev { display: flex; justify-content: space-between; align-items: center; }
+        .precio-prev { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+        .btn-comprar-prev {
+            background-color: var(--primary); color: white; border: none;
+            padding: 8px 14px; border-radius: 20px; font-weight: 600; font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Panel de Administración (Google Cloud)</h1>
-        
-        <form id="productForm" onsubmit="guardarProducto(event)">
-            <div class="form-group">
-                <label for="titulo">Título del Producto</label>
-                <input type="text" id="titulo" required placeholder="Ej: España 1ª Equipación 2026">
+    <div class="admin-layout">
+        <!-- Panel de Formulario -->
+        <div class="panel-container">
+            <h1>Panel de Administración</h1>
+            
+            <form id="productForm" onsubmit="guardarProducto(event)">
+                <div class="form-group">
+                    <label for="titulo">Título del Producto</label>
+                    <input type="text" id="titulo" required placeholder="Ej: España 1ª Equipación 2026" oninput="actualizarVistaPrevia()">
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria">Categoría</label>
+                    <select id="categoria" required onchange="actualizarVistaPrevia()">
+                        <option value="Selecciones">Selecciones</option>
+                        <option value="Clubes">Clubes</option>
+                        <option value="Retro">Retro</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio (€)</label>
+                    <input type="number" step="0.01" id="precio" required placeholder="25.00" oninput="actualizarVistaPrevia()">
+                </div>
+
+                <div class="form-group">
+                    <label for="talla">Tallas Disponibles</label>
+                    <input type="text" id="talla" required placeholder="XS, S, M, L, XL" oninput="actualizarVistaPrevia()">
+                </div>
+
+                <div class="form-group">
+                    <label for="imagenes">Enlaces de Google Drive (Sepáralos con comas si son varios)</label>
+                    <textarea id="imagenes" rows="3" required placeholder="https://drive.google.com/file/d/.../view?usp=sharing" oninput="actualizarVistaPrevia()"></textarea>
+                    <small>Pega los enlaces de Google Drive. El primero será la foto principal.</small>
+                </div>
+
+                <button type="submit" class="btn" id="btnGuardar">🚀 Lanzar a Tienda</button>
+            </form>
+
+            <div id="mensajeEstado" class="mensaje"></div>
+        </div>
+
+        <!-- Vista Previa en Vivo -->
+        <div class="preview-container">
+            <h2>📱 Vista Previa en Tienda</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Así es como verán los clientes el producto antes de publicarlo:</p>
+            
+            <div class="tarjeta-preview">
+                <div class="visor-imagen-prev">
+                    <span class="categoria-badge-prev" id="prevCat">Selecciones</span>
+                    <img id="prevImg" src="https://via.placeholder.com/300x350?text=Sube+una+foto+de+Drive" alt="Vista previa">
+                </div>
+                <div class="tarjeta-info-prev">
+                    <h3 id="prevTitulo">Título del producto...</h3>
+                    <div class="talla-prev" id="prevTalla">Tallas: S, M, L, XL</div>
+                    <div class="footer-card-prev">
+                        <div class="precio-prev" id="prevPrecio">0.00 €</div>
+                        <button class="btn-comprar-prev">Ver / Comprar</button>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="categoria">Categoría</label>
-                <select id="categoria" required>
-                    <option value="Selecciones">Selecciones</option>
-                    <option value="Clubes">Clubes</option>
-                    <option value="Retro">Retro</option>
-                    <option value="Otros">Otros</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="precio">Precio (€)</label>
-                <input type="number" step="0.01" id="precio" required placeholder="25.00">
-            </div>
-
-            <div class="form-group">
-                <label for="talla">Tallas Disponibles</label>
-                <input type="text" id="talla" required placeholder="XS, S, M, L, XL">
-            </div>
-
-            <div class="form-group">
-                <label for="imagenes">Enlaces de Google Drive (Sepáralos con comas si son varios)</label>
-                <textarea id="imagenes" rows="4" required placeholder="https://drive.google.com/file/d/.../view?usp=sharing, https://drive.google.com/..."></textarea>
-                <small>Pega los enlaces compartidos de Google Drive de tus fotos. Si hay varios, pon una coma entre ellos.</small>
-            </div>
-
-            <button type="submit" class="btn" id="btnGuardar">🚀 Lanzar a Tienda (Guardar en Google Sheet)</button>
-        </form>
-
-        <div id="mensajeEstado" class="mensaje"></div>
+        </div>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxGW9FSTwk-n_kKSpuglJjEVAps2DJ7tEeoZrW823KUXTukMbNUtA3GunYn9OaTtDCcnw/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwi_d3Q1xsTiSxZ0WqCdOkNBjdfQh37a2BDyKnM2aoWx27dM8ZEgjKXKwvRsd3Mp26abA/exec';
 
-        // Función auxiliar para transformar automáticamente cualquier enlace de Drive al formato de imagen directa
         function transformarEnlaceDrive(urlOriginal) {
+            if (!urlOriginal) return '';
             let urlLimpia = urlOriginal.trim();
             let id = '';
             
@@ -110,6 +170,27 @@
             return urlLimpia;
         }
 
+        function actualizarVistaPrevia() {
+            const titulo = document.getElementById('titulo').value;
+            const categoria = document.getElementById('categoria').value;
+            const precio = document.getElementById('precio').value;
+            const talla = document.getElementById('talla').value;
+            const imagenesInput = document.getElementById('imagenes').value;
+
+            document.getElementById('prevTitulo').innerText = titulo || "Título del producto...";
+            document.getElementById('prevCat').innerText = categoria;
+            document.getElementById('prevPrecio').innerText = (precio ? precio : "0.00") + " €";
+            document.getElementById('prevTalla').innerText = "Tallas: " + (talla || "S, M, L, XL");
+
+            if (imagenesInput) {
+                const primerEnlace = imagenesInput.split(',')[0].trim();
+                const enlaceDirecto = transformarEnlaceDrive(primerEnlace);
+                document.getElementById('prevImg').src = enlaceDirecto;
+            } else {
+                document.getElementById('prevImg').src = "https://via.placeholder.com/300x350?text=Sube+una+foto+de+Drive";
+            }
+        }
+
         async function guardarProducto(event) {
             event.preventDefault();
             
@@ -119,7 +200,6 @@
             btn.innerText = "Guardando en la nube...";
             mensaje.className = "mensaje";
 
-            // Procesar las imágenes introducidas (separadas por comas) y transformarlas a enlaces directos de Google
             const inputImgs = document.getElementById('imagenes').value;
             const arrayRaw = inputImgs.split(',');
             const arrayTransformado = arrayRaw.map(img => transformarEnlaceDrive(img));
@@ -135,25 +215,24 @@
             };
 
             try {
-                const response = await fetch(API_URL, {
+                await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Necesario para Google Apps Script
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(nuevoProducto)
                 });
 
-                mensaje.innerText = "¡Producto lanzado a la tienda con éxito! Ya se ve en el móvil.";
+                mensaje.innerText = "¡Producto lanzado con éxito a la tienda y al móvil!";
                 mensaje.className = "mensaje exito";
                 document.getElementById('productForm').reset();
+                actualizarVistaPrevia();
             } catch (error) {
                 console.error("Error:", error);
                 mensaje.innerText = "Error al guardar el producto. Inténtalo de nuevo.";
                 mensaje.className = "mensaje error";
             } finally {
                 btn.disabled = false;
-                btn.innerText = "🚀 Lanzar a Tienda (Guardar en Google Sheet)";
+                btn.innerText = "🚀 Lanzar a Tienda";
             }
         }
     </script>
