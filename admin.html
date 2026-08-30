@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Gestión de Catálogo</title>
+    <title>Panel de Administración - Google Drive</title>
     <style>
         :root {
             --primary: #2563eb;
-            --primary-hover: #1d4ed8;
             --success: #16a34a;
-            --success-hover: #15803d;
             --bg: #f8fafc;
             --surface: #ffffff;
             --text: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
             --danger: #ef4444;
-            --danger-hover: #dc2626;
             --warning: #f59e0b;
-            --warning-hover: #d97706;
             --radius: 12px;
         }
 
@@ -35,11 +31,6 @@
         .header-brand { display: flex; align-items: center; gap: 20px; }
         .logo-container { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
         .logo-img { width: 100%; height: 100%; object-fit: contain; }
-
-        .btn-cambiar-logo {
-            background-color: #f1f5f9; color: var(--text); border: 1px solid var(--border);
-            padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
-        }
 
         .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .select-filtro { padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: var(--surface); cursor: pointer; }
@@ -66,11 +57,12 @@
         .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; }
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
 
-        .preview-reorder-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; min-height: 105px; }
-        .item-reorder { position: relative; width: 95px; height: 95px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #fff; display: flex; flex-direction: column; align-items: center; }
-        .item-reorder img { width: 100%; height: 65px; object-fit: cover; }
-        .item-reorder-controls { display: flex; width: 100%; height: 30px; background: #e2e8f0; justify-content: space-between; align-items: center; padding: 0 4px; }
-        .btn-sort { background: none; border: none; cursor: pointer; font-size: 0.75rem; font-weight: bold; padding: 2px 4px; color: #334155; }
+        .input-group-drive { display: flex; gap: 8px; margin-bottom: 8px; }
+        .btn-add-url { background: #e2e8f0; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+        .lista-urls { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 120px; overflow-y: auto; }
+        .url-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border); }
+        .url-item button { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; }
 
         .catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
         .tarjeta { background-color: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
@@ -97,8 +89,10 @@
         </div>
 
         <div class="actions">
-            <input type="file" id="inputLogo" accept="image/*" style="display: none;" onchange="subirLogo(event)">
-            <button class="btn-cambiar-logo" onclick="document.getElementById('inputLogo').click()">🖼️ Cambiar Logo</button>
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="inputLogoUrl" placeholder="Enlace Google Drive del Logo" style="padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; width: 200px;">
+                <button class="btn-principal" style="padding: 8px 12px; font-size: 0.85rem;" onclick="guardarLogoDrive()">Guardar Logo</button>
+            </div>
 
             <select id="filtroCategoria" class="select-filtro" onchange="filtrarProductos()">
                 <option value="todas">Todas las categorías</option>
@@ -116,7 +110,7 @@
     <div class="modal" id="modalForm">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalFormTitulo">Añadir Camiseta a Borradores</h2>
+                <h2 id="modalFormTitulo">Añadir Camiseta (Google Drive)</h2>
                 <button class="btn-cerrar" onclick="cerrarModal()">&times;</button>
             </div>
             <form id="formCamiseta">
@@ -143,11 +137,16 @@
                     <label for="talla">Tallas disponibles:</label>
                     <input type="text" id="talla" required placeholder="Ej: S, M, L, XL">
                 </div>
+                
                 <div class="form-group">
-                    <label for="imagenes">Imágenes (Las fotos se optimizan solas):</label>
-                    <input type="file" id="imagenes" accept="image/*" multiple onchange="cargarPreviaImagenes(event)">
-                    <div class="preview-reorder-container" id="reorderContainer"></div>
+                    <label>Enlaces de Fotos de Google Drive:</label>
+                    <div class="input-group-drive">
+                        <input type="text" id="inputUrlFoto" placeholder="Pega aquí el enlace de compartir de Drive">
+                        <button type="button" class="btn-add-url" onclick="agregarUrlFoto()">Añadir</button>
+                    </div>
+                    <div class="lista-urls" id="listaUrlsContainer"></div>
                 </div>
+
                 <button type="submit" class="btn-principal" style="width: 100%;">Guardar Producto</button>
             </form>
         </div>
@@ -160,46 +159,39 @@
         const catalogo = document.getElementById('catalogo');
         const modal = document.getElementById('modalForm');
 
-        const DRAFTS_KEY = 'camisetas_drafts';
-        const PUBLIC_KEY = 'camisetas_public';
-        const LOGO_DRAFT_KEY = 'logo_draft';
-        const LOGO_PUBLIC_KEY = 'logo_public';
+        const DRAFTS_KEY = 'camisetas_drafts_drive';
+        const PUBLIC_KEY = 'camisetas_public_drive';
+        const LOGO_DRAFT_KEY = 'logo_draft_drive';
+        const LOGO_PUBLIC_KEY = 'logo_public_drive';
 
-        let imagenesTemporal = [];
+        let imagenesUrlsTemporal = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarLogo();
             cargarProductos();
         });
 
-        function comprimirImagen(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 600;
-                        const scaleFactor = MAX_WIDTH / img.width;
-                        canvas.width = (img.width > MAX_WIDTH) ? MAX_WIDTH : img.width;
-                        canvas.height = (img.width > MAX_WIDTH) ? img.height * scaleFactor : img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                };
-            });
+        // Convierte el enlace compartido de Google Drive en un enlace de imagen directa
+        function transformarEnlaceDrive(urlOriginal) {
+            if (!urlOriginal) return '';
+            let match = urlOriginal.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            }
+            match = urlOriginal.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            }
+            return urlOriginal; // Si ya viene limpio o es otro servidor
         }
 
-        function subirLogo(event) {
-            const file = event.target.files[0];
-            if (file) {
-                comprimirImagen(file).then(base64Logo => {
-                    localStorage.setItem(LOGO_DRAFT_KEY, base64Logo);
-                    renderizarLogo(base64Logo);
-                });
+        function guardarLogoDrive() {
+            const urlRaw = document.getElementById('inputLogoUrl').value.trim();
+            const urlLimpia = transformarEnlaceDrive(urlRaw);
+            if (urlLimpia) {
+                localStorage.setItem(LOGO_DRAFT_KEY, urlLimpia);
+                renderizarLogo(urlLimpia);
+                alert("Logo actualizado correctamente.");
             }
         }
 
@@ -212,52 +204,42 @@
             document.getElementById('logoContainer').innerHTML = `<img src="${src}" class="logo-img">`;
         }
 
-        async function cargarPreviaImagenes(event) {
-            const archivos = Array.from(event.target.files);
-            const nuevasBase64 = await Promise.all(archivos.map(file => comprimirImagen(file)));
-            imagenesTemporal = [...imagenesTemporal, ...nuevasBase64];
-            renderizarPreviaReordenar();
-            document.getElementById('imagenes').value = ''; 
+        function agregarUrlFoto() {
+            const input = document.getElementById('inputUrlFoto');
+            const urlRaw = input.value.trim();
+            if (!urlRaw) return;
+
+            const urlLimpia = transformarEnlaceDrive(urlRaw);
+            imagenesUrlsTemporal.push(urlLimpia);
+            input.value = '';
+            renderizarListaUrls();
         }
 
-        function renderizarPreviaReordenar() {
-            const container = document.getElementById('reorderContainer');
+        function renderizarListaUrls() {
+            const container = document.getElementById('listaUrlsContainer');
             container.innerHTML = '';
-            imagenesTemporal.forEach((src, index) => {
+            imagenesUrlsTemporal.forEach((url, index) => {
                 const div = document.createElement('div');
-                div.className = 'item-reorder';
+                div.className = 'url-item';
                 div.innerHTML = `
-                    <img src="${src}">
-                    <div class="item-reorder-controls">
-                        <button type="button" class="btn-sort" onclick="moverFoto(${index}, -1)">⬅️</button>
-                        <button type="button" class="btn-sort" style="color:red" onclick="borrarFoto(${index})">🗑️</button>
-                        <button type="button" class="btn-sort" onclick="moverFoto(${index}, 1)">➡️</button>
-                    </div>
+                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px;">${url}</span>
+                    <button type="button" onclick="borrarUrlFoto(${index})">X</button>
                 `;
                 container.appendChild(div);
             });
         }
 
-        function moverFoto(index, direccion) {
-            const nuevoIndice = index + direccion;
-            if (nuevoIndice < 0 || nuevoIndice >= imagenesTemporal.length) return;
-            const temp = imagenesTemporal[index];
-            imagenesTemporal[index] = imagenesTemporal[nuevoIndice];
-            imagenesTemporal[nuevoIndice] = temp;
-            renderizarPreviaReordenar();
-        }
-
-        function borrarFoto(index) {
-            imagenesTemporal.splice(index, 1);
-            renderizarPreviaReordenar();
+        function borrarUrlFoto(index) {
+            imagenesUrlsTemporal.splice(index, 1);
+            renderizarListaUrls();
         }
 
         function abrirModalCrear() { 
-            document.getElementById('modalFormTitulo').innerText = 'Añadir Camiseta a Borradores';
+            document.getElementById('modalFormTitulo').innerText = 'Añadir Camiseta (Google Drive)';
             document.getElementById('editProductoId').value = '';
             form.reset();
-            imagenesTemporal = [];
-            document.getElementById('reorderContainer').innerHTML = '';
+            imagenesUrlsTemporal = [];
+            document.getElementById('listaUrlsContainer').innerHTML = '';
             modal.style.display = 'flex'; 
         }
 
@@ -273,8 +255,8 @@
             document.getElementById('precio').value = producto.precio;
             document.getElementById('talla').value = producto.talla;
 
-            imagenesTemporal = [...producto.imagenes];
-            renderizarPreviaReordenar();
+            imagenesUrlsTemporal = [...producto.imagenes];
+            renderizarListaUrls();
             modal.style.display = 'flex';
         }
 
@@ -282,8 +264,8 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            if (imagenesTemporal.length === 0) {
-                alert('Añade al menos una imagen.');
+            if (imagenesUrlsTemporal.length === 0) {
+                alert('Añade al menos un enlace de imagen de Google Drive.');
                 return;
             }
 
@@ -294,23 +276,19 @@
                 categoria: document.getElementById('categoria').value,
                 precio: parseFloat(document.getElementById('precio').value).toFixed(2),
                 talla: document.getElementById('talla').value.trim(),
-                imagenes: imagenesTemporal
+                imagenes: imagenesUrlsTemporal
             };
 
-            try {
-                let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
-                if (editId) {
-                    const idx = productos.findIndex(p => p.id === productoData.id);
-                    if (idx !== -1) productos[idx] = productoData;
-                } else {
-                    productos.push(productoData);
-                }
-                localStorage.setItem(DRAFTS_KEY, JSON.stringify(productos));
-                cargarProductos();
-                cerrarModal();
-            } catch (err) {
-                alert("⚠️ Se ha alcanzado la memoria máxima. Prueba a borrar alguna camiseta previa.");
+            let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
+            if (editId) {
+                const idx = productos.findIndex(p => p.id === productoData.id);
+                if (idx !== -1) productos[idx] = productoData;
+            } else {
+                productos.push(productoData);
             }
+            localStorage.setItem(DRAFTS_KEY, JSON.stringify(productos));
+            cargarProductos();
+            cerrarModal();
         });
 
         function cargarProductos() {
@@ -377,15 +355,11 @@
         }
 
         function publicarAlFrontend() {
-            try {
-                const borradores = localStorage.getItem(DRAFTS_KEY) || '[]';
-                localStorage.setItem(PUBLIC_KEY, borradores);
-                const logoDraft = localStorage.getItem(LOGO_DRAFT_KEY);
-                if (logoDraft) localStorage.setItem(LOGO_PUBLIC_KEY, logoDraft);
-                alert('🚀 ¡Lanzamiento completado! Tu web oficial ya está actualizada.');
-            } catch(e) {
-                alert("⚠️ Error al publicar: excede el tamaño límite.");
-            }
+            const borradores = localStorage.getItem(DRAFTS_KEY) || '[]';
+            localStorage.setItem(PUBLIC_KEY, borradores);
+            const logoDraft = localStorage.getItem(LOGO_DRAFT_KEY);
+            if (logoDraft) localStorage.setItem(LOGO_PUBLIC_KEY, logoDraft);
+            alert('🚀 ¡Lanzamiento completado! Tu web oficial ya está sincronizada con Google Drive.');
         }
     </script>
 </body>
