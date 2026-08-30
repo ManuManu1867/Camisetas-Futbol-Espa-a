@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Tienda</title>
+    <title>Panel de Administración - Tienda de Camisetas</title>
     <style>
         :root {
             --primary: #111827;
@@ -11,137 +11,112 @@
             --bg: #f3f4f6;
             --surface: #ffffff;
             --text: #111827;
+            --text-muted: #6b7280;
             --border: #e5e7eb;
-            --success: #10b981;
+            --radius: 8px;
+            --success: #16a34a;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        h1 { margin-bottom: 20px; font-size: 1.8rem; text-align: center; }
-        
-        .card { background: var(--surface); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border); }
-        .card h2 { margin-bottom: 15px; font-size: 1.2rem; color: var(--accent); border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-        
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; outline: none; }
-        input:focus, select:focus { border-color: var(--accent); }
-        
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; transition: background 0.2s; }
-        .btn:hover { background: var(--accent); }
-        .mensaje { margin-top: 10px; font-weight: 600; text-align: center; font-size: 0.9rem; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+
+        .admin-card {
+            background: var(--surface); width: 100%; max-width: 500px;
+            padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; text-align: center; color: var(--primary); }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 0.95rem; outline: none; background: #fff;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+
+        .btn-guardar {
+            background: var(--success); color: white; border: none; width: 100%; padding: 12px;
+            border-radius: var(--radius); font-weight: 700; font-size: 1rem; cursor: pointer; 
+            text-align: center; margin-top: 10px; transition: background 0.2s;
+        }
+        .btn-guardar:hover { background: #15803d; }
+
+        .link-volver { display: block; text-align: center; margin-top: 20px; color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        .link-volver:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Panel de Control 🛠️</h1>
-
-        <!-- Añadir Camiseta -->
-        <div class="card">
-            <h2>➕ Añadir Nueva Camiseta</h2>
-            <form id="formCamiseta" onsubmit="enviarFormulario(event, 'camisetas')">
-                <div class="form-group">
-                    <label>Título del producto:</label>
-                    <input type="text" id="c_titulo" placeholder="Ej: Camiseta Local Real Madrid 2026" required>
-                </div>
-                <div class="form-group">
-                    <label>Categoría:</label>
-                    <select id="c_categoria">
-                        <option value="Selecciones">Selecciones</option>
-                        <option value="Clubes">Clubes</option>
-                        <option value="Retro">Retro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Precio (€):</label>
-                    <input type="number" step="0.01" id="c_precio" placeholder="25.00" required>
-                </div>
-                <div class="form-group">
-                    <label>URL de las imágenes (separadas por comas si son varias):</label>
-                    <textarea id="c_imagenes" rows="2" placeholder="https://enlace1.com/img.jpg, https://enlace2.com/img.jpg" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Tallas disponibles (separadas por comas):</label>
-                    <input type="text" id="c_talla" value="S, M, L, XL, XXL" required>
-                </div>
-                <button type="submit" class="btn">Guardar Camiseta en Google Sheets</button>
-                <div id="msg-camisetas" class="mensaje"></div>
-            </form>
-        </div>
-
-        <!-- Añadir Parche -->
-        <div class="card">
-            <h2>➕ Añadir Nuevo Parche</h2>
-            <form id="formParche" onsubmit="enviarFormulario(event, 'parches')">
-                <div class="form-group">
-                    <label>ID único (Opcional, se genera solo si lo dejas en blanco):</label>
-                    <input type="text" id="p_id" placeholder="Ej: parche_champions">
-                </div>
-                <div class="form-group">
-                    <label>Nombre del Parche:</label>
-                    <input type="text" id="p_nombre" placeholder="Ej: Parche Champions League" required>
-                </div>
-                <div class="form-group">
-                    <label>Posición:</label>
-                    <select id="p_posicion">
-                        <option value="Centro">Centro del Pecho (C)</option>
-                        <option value="Izquierdo">Hombro Izquierdo (I)</option>
-                        <option value="Derecho">Hombro Derecho (D)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>URL de la imagen del parche:</label>
-                    <input type="text" id="p_imagen" placeholder="https://enlace.com/parche.png" required>
-                </div>
-                <button type="submit" class="btn" style="background: #059669;">Guardar Parche en Google Sheets</button>
-                <div id="msg-parches" class="mensaje"></div>
-            </form>
-        </div>
+    <div class="admin-card">
+        <h1>Panel de Administración</h1>
+        <form onsubmit="guardarNuevoProducto(event)">
+            <div class="form-group">
+                <label>Título de la Camiseta:</label>
+                <input type="text" id="adminTitulo" required placeholder="Ej: Argentina 1ª Equipación 2026">
+            </div>
+            <div class="form-group">
+                <label>Categoría:</label>
+                <select id="adminCategoria" required>
+                    <option value="Selecciones">Selecciones</option>
+                    <option value="Clubes">Clubes</option>
+                    <option value="Retro">Retro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Precio (€):</label>
+                <input type="number" step="0.01" id="adminPrecio" required placeholder="24.99">
+            </div>
+            <div class="form-group">
+                <label>Tallas (separadas por comas):</label>
+                <input type="text" id="adminTalla" value="XS, S, M, L, XL" required>
+            </div>
+            <div class="form-group">
+                <label>Enlace de la Imagen (Google Drive o URL):</label>
+                <input type="text" id="adminImagen" required placeholder="https://...">
+            </div>
+            <button type="submit" class="btn-guardar" id="btnGuardarAdmin">Añadir Camiseta a Google Sheets</button>
+        </form>
+        <a href="index.html" class="link-volver">← Ver la tienda de clientes</a>
     </div>
 
     <script>
-        // NUEVA URL DE GOOGLE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxVdpVaulwpjHZyKKPBtfN0XC_FNhZxYftW3fCqXd0JeYEASagt4duknAa0mA60uIYf8g/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzFQoJGaik-xdHVm0CBBvnVGKVJt7bVyPuFNFVeXnC8iT-9plM8nRrabr1rXqdABBBv8g/exec';
 
-        async function enviarFormulario(event, tipo) {
+        async function guardarNuevoProducto(event) {
             event.preventDefault();
-            let msgDiv = document.getElementById(tipo === 'camisetas' ? 'msg-camisetas' : 'msg-parches');
-            msgDiv.style.color = '#2563eb';
-            msgDiv.innerText = "Guardando en Google Sheets...";
+            const btn = document.getElementById('btnGuardarAdmin');
+            btn.innerText = "Guardando...";
+            btn.disabled = true;
 
-            let datos = { tipo: tipo };
-
-            if (tipo === 'camisetas') {
-                datos.titulo = document.getElementById('c_titulo').value;
-                datos.categoria = document.getElementById('c_categoria').value;
-                datos.precio = document.getElementById('c_precio').value;
-                datos.imagenes = document.getElementById('c_imagenes').value;
-                datos.talla = document.getElementById('c_talla').value;
-            } else {
-                datos.id = document.getElementById('p_id').value;
-                datos.nombre = document.getElementById('p_nombre').value;
-                datos.posicion = document.getElementById('p_posicion').value;
-                datos.imagen = document.getElementById('p_imagen').value;
-            }
+            let nuevoProducto = {
+                titulo: document.getElementById('adminTitulo').value,
+                categoria: document.getElementById('adminCategoria').value,
+                precio: document.getElementById('adminPrecio').value,
+                talla: document.getElementById('adminTalla').value,
+                imagenes: document.getElementById('adminImagen').value
+            };
 
             try {
-                let response = await fetch(API_URL, {
+                await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify(datos)
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nuevoProducto)
                 });
-                let resultado = await response.json();
 
-                if (resultado.success) {
-                    msgDiv.style.color = 'var(--success)';
-                    msgDiv.innerText = "¡Guardado con éxito en Google Sheets! ✅";
-                    event.target.reset();
-                } else {
-                    throw new Error(resultado.error || "Error desconocido");
-                }
+                alert("¡Camiseta añadida correctamente a Google Sheets!");
+                document.getElementById('adminTitulo').value = '';
+                document.getElementById('adminPrecio').value = '';
+                document.getElementById('adminImagen').value = '';
             } catch (error) {
-                msgDiv.style.color = '#ef4444';
-                msgDiv.innerText = "Error al guardar: " + error.message;
+                console.error("Error al guardar:", error);
+                alert("Hubo un error al guardar.");
+            } finally {
+                btn.innerText = "Añadir Camiseta a Google Sheets";
+                btn.disabled = false;
             }
         }
     </script>
