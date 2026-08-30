@@ -3,120 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Google Drive</title>
+    <title>Panel de Administración - Vista Previa</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --primary: #111827;
+            --accent: #2563eb;
+            --bg: #ffffff;
+            --surface: #f9fafb;
+            --text: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --radius: 12px;
+            --radius: 8px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 30px 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; }
 
-        header {
-            max-width: 1200px; margin: 0 auto 25px auto; display: flex;
-            justify-content: space-between; align-items: center; flex-wrap: wrap;
-            gap: 20px; background: var(--surface); padding: 20px 30px;
-            border-radius: var(--radius); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        /* Barra de navegación unificada estilo Nike */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px; border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px); z-index: 100; flex-wrap: wrap; gap: 15px;
         }
 
-        .header-brand { display: flex; align-items: center; gap: 20px; }
-        /* Logo más grande y legible */
-        .logo-container { width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; }
+        .logo-container { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
         .logo-img { width: 100%; height: 100%; object-fit: contain; }
 
-        .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .select-filtro { padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: var(--surface); cursor: pointer; }
-        .btn-principal { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-        .btn-publicar { background-color: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-        .btn-editar { background-color: var(--warning); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        .admin-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        
+        .input-logo {
+            padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+            font-size: 0.85rem; width: 220px; outline: none;
+        }
 
+        .btn-admin {
+            background-color: var(--primary); color: white; border: none;
+            padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-admin:hover { background-color: #374151; }
+
+        .btn-lanzar {
+            background-color: #16a34a; color: white; border: none;
+            padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-lanzar:hover { background-color: #15803d; }
+
+        .nav-filtros { display: flex; gap: 10px; overflow-x: auto; padding: 5px 0; }
+        .btn-filtro {
+            background: transparent; border: none; padding: 8px 16px;
+            font-size: 0.95rem; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; border-radius: 20px; transition: all 0.2s ease;
+        }
+        .btn-filtro:hover, .btn-filtro.activo {
+            background: var(--primary); color: white;
+        }
+
+        /* Banner de Categoría */
+        .hero-banner {
+            max-width: 1400px; margin: 30px auto 20px auto; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .hero-banner h1 { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
+
+        /* Contenedor del Catálogo */
+        .catalogo {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px; max-width: 1400px; margin: 0 auto; padding: 0 20px;
+        }
+
+        .tarjeta {
+            background-color: var(--surface); border-radius: var(--radius);
+            overflow: hidden; display: flex; flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .tarjeta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -10px rgba(0,0,0,0.1);
+            border-color: var(--border);
+        }
+
+        .visor-imagen {
+            position: relative; background-color: #f3f4f6; height: 350px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .visor-imagen img.img-principal { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .tarjeta:hover .img-principal { transform: scale(1.03); }
+
+        .categoria-badge {
+            position: absolute; top: 15px; left: 15px; background-color: white;
+            color: var(--text); padding: 4px 10px; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .miniaturas { display: flex; gap: 6px; padding: 12px 15px 0 15px; overflow-x: auto; }
+        .miniatura {
+            width: 40px; height: 40px; border-radius: 4px; object-fit: cover;
+            cursor: pointer; border: 1px solid var(--border); background-color: white;
+            opacity: 0.7; transition: opacity 0.2s;
+        }
+        .miniatura:hover, .miniatura.activa { opacity: 1; border-color: var(--primary); }
+
+        .tarjeta-info { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .tarjeta-info h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+        .talla { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+        
+        .footer-card { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .precio { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+        
+        .card-actions { display: flex; gap: 8px; }
+        .btn-editar { background-color: var(--warning); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
+        .btn-eliminar { background-color: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
+
+        /* Modal */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000;
             justify-content: center; align-items: center; padding: 20px;
         }
-
         .modal-content {
-            background-color: var(--surface); width: 100%; max-width: 550px;
-            border-radius: var(--radius); padding: 25px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            max-height: 90vh; overflow-y: auto;
+            background-color: var(--bg); width: 100%; max-width: 500px;
+            border-radius: var(--radius); padding: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            max-height: 90vh; overflow-y: auto; border: 1px solid var(--border);
         }
-
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-cerrar { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
-
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
-
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; outline: none; }
         .input-group-drive { display: flex; gap: 8px; margin-bottom: 8px; }
-        .btn-add-url { background: #e2e8f0; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-
-        .lista-urls { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 120px; overflow-y: auto; }
-        .url-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border); }
+        .btn-add-url { background: #f3f4f6; border: 1px solid var(--border); padding: 0 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .lista-urls { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 100px; overflow-y: auto; }
+        .url-item { display: flex; justify-content: space-between; align-items: center; background: #f9fafb; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; border: 1px solid var(--border); }
         .url-item button { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; }
-
-        .catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
-        .tarjeta { background-color: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .visor-imagen { position: relative; background-color: #f1f5f9; height: 320px; display: flex; align-items: center; justify-content: center; }
-        .visor-imagen img.img-principal { width: 100%; height: 100%; object-fit: contain; padding: 15px; }
-        .categoria-badge { position: absolute; top: 12px; left: 12px; background-color: rgba(15, 23, 42, 0.85); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-        .miniaturas { display: flex; gap: 8px; padding: 10px 15px 0 15px; overflow-x: auto; justify-content: center; }
-        .miniatura { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; cursor: pointer; border: 2px solid transparent; background-color: #f1f5f9; }
-        .miniatura.activa { border-color: var(--primary); }
-        .tarjeta-info { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; text-align: center; }
-        .precio { font-size: 1.2rem; font-weight: 700; color: #16a34a; margin-bottom: 4px; }
-        .talla { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; }
-        .card-actions { display: flex; gap: 6px; justify-content: center; margin-top: auto; flex-wrap: wrap; }
-        .btn-eliminar { background-color: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-brand">
+    <nav>
+        <div class="nav-brand">
             <div class="logo-container" id="logoContainer">
-                <h2>Panel Admin</h2>
+                <h2>ADMIN</h2>
+            </div>
+            <div class="admin-controls">
+                <input type="text" id="inputLogoUrl" class="input-logo" placeholder="Enlace Google Drive del Logo">
+                <button class="btn-admin" onclick="guardarLogoDrive()">Guardar Logo</button>
             </div>
         </div>
-
-        <div class="actions">
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="inputLogoUrl" placeholder="Enlace Google Drive del Logo" style="padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; width: 200px;">
-                <button class="btn-principal" style="padding: 8px 12px; font-size: 0.85rem;" onclick="guardarLogoDrive()">Guardar Logo</button>
-            </div>
-
-            <select id="filtroCategoria" class="select-filtro" onchange="filtrarProductos()">
-                <option value="todas">Todas las categorías</option>
-                <option value="Selecciones">Selecciones</option>
-                <option value="Clubes">Clubes</option>
-                <option value="Retro">Retro</option>
-                <option value="Otros">Otros</option>
-            </select>
-
-            <button class="btn-principal" onclick="abrirModalCrear()">+ Crear Camiseta</button>
-            <button class="btn-publicar" onclick="publicarAlFrontend()">🚀 Lanzar a Tienda</button>
+        <div class="nav-filtros">
+            <button class="btn-filtro activo" onclick="filtrarAdmin('todas', this)">Todo</button>
+            <button class="btn-filtro" onclick="filtrarAdmin('Selecciones', this)">Selecciones</button>
+            <button class="btn-filtro" onclick="filtrarAdmin('Clubes', this)">Clubes</button>
+            <button class="btn-filtro" onclick="filtrarAdmin('Retro', this)">Retro</button>
+            <button class="btn-filtro" onclick="filtrarAdmin('Otros', this)">Otros</button>
         </div>
-    </header>
+    </nav>
 
+    <div class="hero-banner">
+        <h1 id="tituloAdmin">Panel de Borradores</h1>
+        <div>
+            <button class="btn-admin" onclick="abrirModalCrear()">+ Crear Producto</button>
+            <button class="btn-lanzar" onclick="publicarAlFrontend()">🚀 Lanzar a Tienda</button>
+        </div>
+    </div>
+
+    <div class="catalogo" id="catalogoAdmin"></div>
+
+    <!-- Modal Formulario -->
     <div class="modal" id="modalForm">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalFormTitulo">Añadir Camiseta (Google Drive)</h2>
+                <h2 id="modalFormTitulo" style="font-size: 1.2rem; font-weight: 700;">Añadir Producto</h2>
                 <button class="btn-cerrar" onclick="cerrarModal()">&times;</button>
             </div>
             <form id="formCamiseta">
                 <input type="hidden" id="editProductoId" value="">
-
                 <div class="form-group">
                     <label for="titulo">Nombre del Producto:</label>
                     <input type="text" id="titulo" required placeholder="Ej: España 1ra Equipación 2026">
@@ -131,33 +199,29 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="precio">Precio Base (€):</label>
+                    <label for="precio">Precio (€):</label>
                     <input type="number" step="0.01" id="precio" required placeholder="Ej: 25">
                 </div>
                 <div class="form-group">
-                    <label for="talla">Tallas disponibles:</label>
+                    <label for="talla">Tallas:</label>
                     <input type="text" id="talla" required placeholder="Ej: S, M, L, XL">
                 </div>
-                
                 <div class="form-group">
-                    <label>Enlaces de Fotos de Google Drive:</label>
+                    <label>Fotos de Google Drive:</label>
                     <div class="input-group-drive">
-                        <input type="text" id="inputUrlFoto" placeholder="Pega aquí el enlace de compartir de Drive">
+                        <input type="text" id="inputUrlFoto" placeholder="Pega el enlace de compartir de Drive">
                         <button type="button" class="btn-add-url" onclick="agregarUrlFoto()">Añadir</button>
                     </div>
                     <div class="lista-urls" id="listaUrlsContainer"></div>
                 </div>
-
-                <button type="submit" class="btn-principal" style="width: 100%;">Guardar Producto</button>
+                <button type="submit" class="btn-admin" style="width: 100%; padding: 12px; border-radius: 6px; margin-top: 10px;">Guardar Borrador</button>
             </form>
         </div>
     </div>
 
-    <div class="catalogo" id="catalogo"></div>
-
     <script>
         const form = document.getElementById('formCamiseta');
-        const catalogo = document.getElementById('catalogo');
+        const catalogo = document.getElementById('catalogoAdmin');
         const modal = document.getElementById('modalForm');
 
         const DRAFTS_KEY = 'camisetas_drafts_drive';
@@ -166,22 +230,19 @@
         const LOGO_PUBLIC_KEY = 'logo_public_drive';
 
         let imagenesUrlsTemporal = [];
+        let categoriaActual = 'todas';
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarLogo();
-            cargarProductos();
+            cargarProductosAdmin();
         });
 
         function transformarEnlaceDrive(urlOriginal) {
             if (!urlOriginal) return '';
             let match = urlOriginal.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            }
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
             match = urlOriginal.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            }
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
             return urlOriginal;
         }
 
@@ -191,7 +252,7 @@
             if (urlLimpia) {
                 localStorage.setItem(LOGO_DRAFT_KEY, urlLimpia);
                 renderizarLogo(urlLimpia);
-                alert("Logo actualizado correctamente.");
+                alert("Logo actualizado en borradores.");
             }
         }
 
@@ -208,9 +269,7 @@
             const input = document.getElementById('inputUrlFoto');
             const urlRaw = input.value.trim();
             if (!urlRaw) return;
-
-            const urlLimpia = transformarEnlaceDrive(urlRaw);
-            imagenesUrlsTemporal.push(urlLimpia);
+            imagenesUrlsTemporal.push(transformarEnlaceDrive(urlRaw));
             input.value = '';
             renderizarListaUrls();
         }
@@ -221,10 +280,7 @@
             imagenesUrlsTemporal.forEach((url, index) => {
                 const div = document.createElement('div');
                 div.className = 'url-item';
-                div.innerHTML = `
-                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px;">${url}</span>
-                    <button type="button" onclick="borrarUrlFoto(${index})">X</button>
-                `;
+                div.innerHTML = `<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 350px;">${url}</span><button type="button" onclick="borrarUrlFoto(${index})">X</button>`;
                 container.appendChild(div);
             });
         }
@@ -234,13 +290,13 @@
             renderizarListaUrls();
         }
 
-        function abrirModalCrear() { 
-            document.getElementById('modalFormTitulo').innerText = 'Añadir Camiseta (Google Drive)';
+        function abrirModalCrear() {
+            document.getElementById('modalFormTitulo').innerText = 'Añadir Producto';
             document.getElementById('editProductoId').value = '';
             form.reset();
             imagenesUrlsTemporal = [];
             document.getElementById('listaUrlsContainer').innerHTML = '';
-            modal.style.display = 'flex'; 
+            modal.style.display = 'flex';
         }
 
         function abrirModalEditar(id) {
@@ -248,7 +304,7 @@
             const producto = productos.find(p => p.id === id);
             if (!producto) return;
 
-            document.getElementById('modalFormTitulo').innerText = '✏️ Editar Producto';
+            document.getElementById('modalFormTitulo').innerText = 'Editar Producto';
             document.getElementById('editProductoId').value = producto.id;
             document.getElementById('titulo').value = producto.titulo;
             document.getElementById('categoria').value = producto.categoria;
@@ -265,7 +321,7 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             if (imagenesUrlsTemporal.length === 0) {
-                alert('Añade al menos un enlace de imagen de Google Drive.');
+                alert('Añade al menos una imagen.');
                 return;
             }
 
@@ -276,7 +332,7 @@
                 categoria: document.getElementById('categoria').value,
                 precio: parseFloat(document.getElementById('precio').value).toFixed(2),
                 talla: document.getElementById('talla').value.trim(),
-                imagenes: imagenesUrlsTemporal
+                imagenes: [...imagenesUrlsTemporal]
             };
 
             let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
@@ -287,51 +343,59 @@
                 productos.push(productoData);
             }
             localStorage.setItem(DRAFTS_KEY, JSON.stringify(productos));
-            cargarProductos();
+            cargarProductosAdmin();
             cerrarModal();
         });
 
-        function cargarProductos() {
+        function cargarProductosAdmin() {
             catalogo.innerHTML = '';
             let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
-            productos.forEach(producto => renderizarProducto(producto));
-        }
 
-        function renderizarProducto(producto) {
-            const tarjeta = document.createElement('div');
-            tarjeta.classList.add('tarjeta');
-            tarjeta.setAttribute('data-id', producto.id);
-            tarjeta.setAttribute('data-categoria', producto.categoria);
-
-            let miniaturasHTML = '';
-            if (producto.imagenes.length > 1) {
-                miniaturasHTML = `<div class="miniaturas">`;
-                producto.imagenes.forEach((imgSrc, index) => {
-                    miniaturasHTML += `<img src="${imgSrc}" class="miniatura ${index === 0 ? 'activa' : ''}" onclick="cambiarImagenPrincipal(${producto.id}, '${imgSrc}', this)">`;
-                });
-                miniaturasHTML += `</div>`;
+            if (categoriaActual !== 'todas') {
+                productos = productos.filter(p => p.categoria === categoriaActual);
             }
 
-            tarjeta.innerHTML = `
-                <div class="visor-imagen">
-                    <span class="categoria-badge">${producto.categoria}</span>
-                    <img src="${producto.imagenes[0]}" class="img-principal" id="img-main-${producto.id}">
-                </div>
-                ${miniaturasHTML}
-                <div class="tarjeta-info">
-                    <h3>${producto.titulo}</h3>
-                    <div class="precio">${producto.precio} €</div>
-                    <div class="talla">Tallas: ${producto.talla}</div>
-                    <div class="card-actions">
-                        <button class="btn-editar" onclick="abrirModalEditar(${producto.id})">✏️ Editar</button>
-                        <button class="btn-eliminar" onclick="eliminarProducto(${producto.id})">Eliminar</button>
+            if (productos.length === 0) {
+                catalogo.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No hay borradores en esta categoría.</div>`;
+                return;
+            }
+
+            productos.forEach(producto => {
+                const tarjeta = document.createElement('div');
+                tarjeta.classList.add('tarjeta');
+
+                let miniaturasHTML = '';
+                if (producto.imagenes && producto.imagenes.length > 1) {
+                    miniaturasHTML = `<div class="miniaturas">`;
+                    producto.imagenes.forEach((imgSrc, index) => {
+                        miniaturasHTML += `<img src="${imgSrc}" class="miniatura ${index === 0 ? 'activa' : ''}" onclick="cambiarImagenAdmin(${producto.id}, '${imgSrc}', this)">`;
+                    });
+                    miniaturasHTML += `</div>`;
+                }
+
+                tarjeta.innerHTML = `
+                    <div class="visor-imagen">
+                        <span class="categoria-badge">${producto.categoria}</span>
+                        <img src="${producto.imagenes[0]}" class="img-principal" id="img-main-${producto.id}">
                     </div>
-                </div>
-            `;
-            catalogo.appendChild(tarjeta);
+                    ${miniaturasHTML}
+                    <div class="tarjeta-info">
+                        <h3>${producto.titulo}</h3>
+                        <div class="talla">Tallas: ${producto.talla}</div>
+                        <div class="footer-card">
+                            <div class="precio">${producto.precio} €</div>
+                            <div class="card-actions">
+                                <button class="btn-editar" onclick="abrirModalEditar(${producto.id})">Editar</button>
+                                <button class="btn-eliminar" onclick="eliminarProducto(${producto.id})">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                catalogo.appendChild(tarjeta);
+            });
         }
 
-        function cambiarImagenPrincipal(id, nuevaSrc, elementoThumb) {
+        function cambiarImagenAdmin(id, nuevaSrc, elementoThumb) {
             document.getElementById(`img-main-${id}`).src = nuevaSrc;
             const tarjeta = elementoThumb.closest('.tarjeta');
             tarjeta.querySelectorAll('.miniatura').forEach(thumb => thumb.classList.remove('activa'));
@@ -339,19 +403,19 @@
         }
 
         function eliminarProducto(id) {
-            if(!confirm('¿Eliminar producto?')) return;
+            if(!confirm('¿Estás seguro de eliminar este borrador?')) return;
             let productos = JSON.parse(localStorage.getItem(DRAFTS_KEY)) || [];
             productos = productos.filter(p => p.id !== id);
             localStorage.setItem(DRAFTS_KEY, JSON.stringify(productos));
-            cargarProductos();
+            cargarProductosAdmin();
         }
 
-        function filtrarProductos() {
-            const cat = document.getElementById('filtroCategoria').value;
-            document.querySelectorAll('.tarjeta').forEach(tarjeta => {
-                const c = tarjeta.getAttribute('data-categoria');
-                tarjeta.style.display = (cat === 'todas' || c === cat) ? 'flex' : 'none';
-            });
+        function filtrarAdmin(cat, botonElemento) {
+            categoriaActual = cat;
+            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
+            botonElemento.classList.add('activo');
+            document.getElementById('tituloAdmin').innerText = cat === 'todas' ? 'Panel de Borradores' : cat;
+            cargarProductosAdmin();
         }
 
         function publicarAlFrontend() {
@@ -359,7 +423,7 @@
             localStorage.setItem(PUBLIC_KEY, borradores);
             const logoDraft = localStorage.getItem(LOGO_DRAFT_KEY);
             if (logoDraft) localStorage.setItem(LOGO_PUBLIC_KEY, logoDraft);
-            alert('🚀 ¡Lanzamiento completado! Tu web oficial ya está sincronizada con Google Drive.');
+            alert('🚀 ¡Lanzamiento completado! Los cambios se han sincronizado con la tienda oficial.');
         }
     </script>
 </body>
