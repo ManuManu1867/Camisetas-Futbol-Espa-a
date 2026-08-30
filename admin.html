@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Vista Previa</title>
+    <title>Panel de Administración - Tienda</title>
     <style>
         :root {
             --primary: #111827;
@@ -11,228 +11,137 @@
             --bg: #f3f4f6;
             --surface: #ffffff;
             --text: #111827;
-            --text-muted: #6b7280;
             --border: #e5e7eb;
-            --radius: 8px;
             --success: #10b981;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; }
-
-        .admin-layout {
-            max-width: 1200px; margin: 0 auto;
-            display: grid; grid-template-columns: 1fr; gap: 30px;
-        }
-        @media (min-width: 900px) {
-            .admin-layout { grid-template-columns: 1fr 400px; }
-        }
-
-        .panel-container, .preview-container {
-            background: var(--surface); padding: 30px; border-radius: var(--radius);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-
-        h1, h2 { font-size: 1.4rem; margin-bottom: 20px; font-weight: 800; color: var(--primary); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { margin-bottom: 20px; font-size: 1.8rem; text-align: center; }
         
-        .form-group { margin-bottom: 18px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
-        input, select, textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 1rem; outline: none; transition: border-color 0.2s; }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        .card { background: var(--surface); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border); }
+        .card h2 { margin-bottom: 15px; font-size: 1.2rem; color: var(--accent); border-bottom: 2px solid var(--border); padding-bottom: 8px; }
         
-        small { display: block; color: var(--text-muted); margin-top: 4px; font-size: 0.75rem; }
-
-        .btn {
-            background-color: var(--primary); color: white; border: none;
-            padding: 12px 20px; border-radius: var(--radius); font-weight: 600; font-size: 1rem;
-            cursor: pointer; transition: background 0.2s; width: 100%;
-        }
-        .btn:hover { background-color: #374151; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; outline: none; }
+        input:focus, select:focus { border-color: var(--accent); }
         
-        .mensaje { margin-top: 15px; padding: 12px; border-radius: var(--radius); text-align: center; font-weight: 600; display: none; }
-        .mensaje.exito { background-color: #d1fae5; color: #065f46; display: block; }
-        .mensaje.error { background-color: #fee2e2; color: #991b1b; display: block; }
-
-        /* Estilos de la tarjeta de Vista Previa idénticos a la tienda */
-        .tarjeta-preview {
-            background-color: #f9fafb; border-radius: var(--radius);
-            overflow: hidden; display: flex; flex-direction: column;
-            border: 1px solid var(--border); margin-top: 10px;
-        }
-        .visor-imagen-prev {
-            position: relative; background-color: #f3f4f6; height: 280px;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
-        .visor-imagen-prev img { width: 100%; height: 100%; object-fit: cover; }
-        .categoria-badge-prev {
-            position: absolute; top: 10px; left: 10px; background-color: white;
-            color: var(--text); padding: 4px 8px; border-radius: 4px;
-            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .tarjeta-info-prev { padding: 15px; display: flex; flex-direction: column; }
-        .tarjeta-info-prev h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-        .talla-prev { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
-        .footer-card-prev { display: flex; justify-content: space-between; align-items: center; }
-        .precio-prev { font-size: 1.1rem; font-weight: 700; color: var(--text); }
-        .btn-comprar-prev {
-            background-color: var(--primary); color: white; border: none;
-            padding: 8px 14px; border-radius: 20px; font-weight: 600; font-size: 0.8rem;
-        }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; transition: background 0.2s; }
+        .btn:hover { background: var(--accent); }
+        .mensaje { margin-top: 10px; font-weight: 600; text-align: center; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <div class="admin-layout">
-        <!-- Panel de Formulario -->
-        <div class="panel-container">
-            <h1>Panel de Administración</h1>
-            
-            <form id="productForm" onsubmit="guardarProducto(event)">
-                <div class="form-group">
-                    <label for="titulo">Título del Producto</label>
-                    <input type="text" id="titulo" required placeholder="Ej: España 1ª Equipación 2026" oninput="actualizarVistaPrevia()">
-                </div>
+    <div class="container">
+        <h1>Panel de Control 🛠️</h1>
 
+        <!-- Añadir Camiseta -->
+        <div class="card">
+            <h2>➕ Añadir Nueva Camiseta</h2>
+            <form id="formCamiseta" onsubmit="enviarFormulario(event, 'camisetas')">
                 <div class="form-group">
-                    <label for="categoria">Categoría</label>
-                    <select id="categoria" required onchange="actualizarVistaPrevia()">
+                    <label>Título del producto:</label>
+                    <input type="text" id="c_titulo" placeholder="Ej: Camiseta Local Real Madrid 2026" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoría:</label>
+                    <select id="c_categoria">
                         <option value="Selecciones">Selecciones</option>
                         <option value="Clubes">Clubes</option>
                         <option value="Retro">Retro</option>
-                        <option value="Otros">Otros</option>
                     </select>
                 </div>
-
                 <div class="form-group">
-                    <label for="precio">Precio (€)</label>
-                    <input type="number" step="0.01" id="precio" required placeholder="25.00" oninput="actualizarVistaPrevia()">
+                    <label>Precio (€):</label>
+                    <input type="number" step="0.01" id="c_precio" placeholder="25.00" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="talla">Tallas Disponibles</label>
-                    <input type="text" id="talla" required placeholder="XS, S, M, L, XL" oninput="actualizarVistaPrevia()">
+                    <label>URL de las imágenes (separadas por comas si son varias):</label>
+                    <textarea id="c_imagenes" rows="2" placeholder="https://enlace1.com/img.jpg, https://enlace2.com/img.jpg" required></textarea>
                 </div>
-
                 <div class="form-group">
-                    <label for="imagenes">Enlaces de Google Drive (Sepáralos con comas si son varios)</label>
-                    <textarea id="imagenes" rows="3" required placeholder="https://drive.google.com/file/d/.../view?usp=sharing" oninput="actualizarVistaPrevia()"></textarea>
-                    <small>Pega los enlaces de Google Drive. El primero será la foto principal.</small>
+                    <label>Tallas disponibles (separadas por comas):</label>
+                    <input type="text" id="c_talla" value="S, M, L, XL, XXL" required>
                 </div>
-
-                <button type="submit" class="btn" id="btnGuardar">🚀 Lanzar a Tienda</button>
+                <button type="submit" class="btn">Guardar Camiseta en Google Sheets</button>
+                <div id="msg-camisetas" class="mensaje"></div>
             </form>
-
-            <div id="mensajeEstado" class="mensaje"></div>
         </div>
 
-        <!-- Vista Previa en Vivo -->
-        <div class="preview-container">
-            <h2>📱 Vista Previa en Tienda</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Así es como verán los clientes el producto antes de publicarlo:</p>
-            
-            <div class="tarjeta-preview">
-                <div class="visor-imagen-prev">
-                    <span class="categoria-badge-prev" id="prevCat">Selecciones</span>
-                    <img id="prevImg" src="https://via.placeholder.com/300x350?text=Sube+una+foto+de+Drive" alt="Vista previa">
+        <!-- Añadir Parche -->
+        <div class="card">
+            <h2>➕ Añadir Nuevo Parche</h2>
+            <form id="formParche" onsubmit="enviarFormulario(event, 'parches')">
+                <div class="form-group">
+                    <label>ID único (Opcional, se genera solo si lo dejas en blanco):</label>
+                    <input type="text" id="p_id" placeholder="Ej: parche_champions">
                 </div>
-                <div class="tarjeta-info-prev">
-                    <h3 id="prevTitulo">Título del producto...</h3>
-                    <div class="talla-prev" id="prevTalla">Tallas: S, M, L, XL</div>
-                    <div class="footer-card-prev">
-                        <div class="precio-prev" id="prevPrecio">0.00 €</div>
-                        <button class="btn-comprar-prev">Ver / Comprar</button>
-                    </div>
+                <div class="form-group">
+                    <label>Nombre del Parche:</label>
+                    <input type="text" id="p_nombre" placeholder="Ej: Parche Champions League" required>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label>Posición:</label>
+                    <select id="p_posicion">
+                        <option value="Centro">Centro del Pecho (C)</option>
+                        <option value="Izquierdo">Hombro Izquierdo (I)</option>
+                        <option value="Derecho">Hombro Derecho (D)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>URL de la imagen del parche:</label>
+                    <input type="text" id="p_imagen" placeholder="https://enlace.com/parche.png" required>
+                </div>
+                <button type="submit" class="btn" style="background: #059669;">Guardar Parche en Google Sheets</button>
+                <div id="msg-parches" class="mensaje"></div>
+            </form>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwi_d3Q1xsTiSxZ0WqCdOkNBjdfQh37a2BDyKnM2aoWx27dM8ZEgjKXKwvRsd3Mp26abA/exec';
+        // NUEVA URL DE GOOGLE APPS SCRIPT
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxVdpVaulwpjHZyKKPBtfN0XC_FNhZxYftW3fCqXd0JeYEASagt4duknAa0mA60uIYf8g/exec';
 
-        function transformarEnlaceDrive(urlOriginal) {
-            if (!urlOriginal) return '';
-            let urlLimpia = urlOriginal.trim();
-            let id = '';
-            
-            if (urlLimpia.includes('/d/')) {
-                let match = urlLimpia.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) id = match[1];
-            } else if (urlLimpia.includes('id=')) {
-                let match = urlLimpia.match(/id=([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) id = match[1];
-            }
-
-            if (id) {
-                return `https://lh3.googleusercontent.com/d/${id}`;
-            }
-            return urlLimpia;
-        }
-
-        function actualizarVistaPrevia() {
-            const titulo = document.getElementById('titulo').value;
-            const categoria = document.getElementById('categoria').value;
-            const precio = document.getElementById('precio').value;
-            const talla = document.getElementById('talla').value;
-            const imagenesInput = document.getElementById('imagenes').value;
-
-            document.getElementById('prevTitulo').innerText = titulo || "Título del producto...";
-            document.getElementById('prevCat').innerText = categoria;
-            document.getElementById('prevPrecio').innerText = (precio ? precio : "0.00") + " €";
-            document.getElementById('prevTalla').innerText = "Tallas: " + (talla || "S, M, L, XL");
-
-            if (imagenesInput) {
-                const primerEnlace = imagenesInput.split(',')[0].trim();
-                const enlaceDirecto = transformarEnlaceDrive(primerEnlace);
-                document.getElementById('prevImg').src = enlaceDirecto;
-            } else {
-                document.getElementById('prevImg').src = "https://via.placeholder.com/300x350?text=Sube+una+foto+de+Drive";
-            }
-        }
-
-        async function guardarProducto(event) {
+        async function enviarFormulario(event, tipo) {
             event.preventDefault();
-            
-            const btn = document.getElementById('btnGuardar');
-            const mensaje = document.getElementById('mensajeEstado');
-            btn.disabled = true;
-            btn.innerText = "Guardando en la nube...";
-            mensaje.className = "mensaje";
+            let msgDiv = document.getElementById(tipo === 'camisetas' ? 'msg-camisetas' : 'msg-parches');
+            msgDiv.style.color = '#2563eb';
+            msgDiv.innerText = "Guardando en Google Sheets...";
 
-            const inputImgs = document.getElementById('imagenes').value;
-            const arrayRaw = inputImgs.split(',');
-            const arrayTransformado = arrayRaw.map(img => transformarEnlaceDrive(img));
-            const imagenesFinalesStr = arrayTransformado.join(',');
+            let datos = { tipo: tipo };
 
-            const nuevoProducto = {
-                id: new Date().getTime(),
-                titulo: document.getElementById('titulo').value,
-                categoria: document.getElementById('categoria').value,
-                precio: document.getElementById('precio').value,
-                talla: document.getElementById('talla').value,
-                imagenes: imagenesFinalesStr
-            };
+            if (tipo === 'camisetas') {
+                datos.titulo = document.getElementById('c_titulo').value;
+                datos.categoria = document.getElementById('c_categoria').value;
+                datos.precio = document.getElementById('c_precio').value;
+                datos.imagenes = document.getElementById('c_imagenes').value;
+                datos.talla = document.getElementById('c_talla').value;
+            } else {
+                datos.id = document.getElementById('p_id').value;
+                datos.nombre = document.getElementById('p_nombre').value;
+                datos.posicion = document.getElementById('p_posicion').value;
+                datos.imagen = document.getElementById('p_imagen').value;
+            }
 
             try {
-                await fetch(API_URL, {
+                let response = await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(nuevoProducto)
+                    body: JSON.stringify(datos)
                 });
+                let resultado = await response.json();
 
-                mensaje.innerText = "¡Producto lanzado con éxito a la tienda y al móvil!";
-                mensaje.className = "mensaje exito";
-                document.getElementById('productForm').reset();
-                actualizarVistaPrevia();
+                if (resultado.success) {
+                    msgDiv.style.color = 'var(--success)';
+                    msgDiv.innerText = "¡Guardado con éxito en Google Sheets! ✅";
+                    event.target.reset();
+                } else {
+                    throw new Error(resultado.error || "Error desconocido");
+                }
             } catch (error) {
-                console.error("Error:", error);
-                mensaje.innerText = "Error al guardar el producto. Inténtalo de nuevo.";
-                mensaje.className = "mensaje error";
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "🚀 Lanzar a Tienda";
+                msgDiv.style.color = '#ef4444';
+                msgDiv.innerText = "Error al guardar: " + error.message;
             }
         }
     </script>
