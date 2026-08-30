@@ -207,13 +207,17 @@
                 let titulo = document.getElementById('adminTitulo').value || 'Título de ejemplo';
                 let categoria = document.getElementById('adminCategoria').value;
                 let precio = parseFloat(document.getElementById('adminPrecio').value || 24.99).toFixed(2);
-                let imgUrl = limpiarUrlImagen(document.getElementById('adminImagen').value) || 'https://via.placeholder.com/300x300?text=Vista+Previa';
+                let imgUrl = limpiarUrlImagen(document.getElementById('adminImagen').value);
+
+                let contenidoImagen = imgUrl ? 
+                    `<img src="${imgUrl}" alt="Preview" onerror="this.parentElement.innerHTML='<div style=\'color:#6b7280; font-size:0.85rem; font-weight:600;\'>Error al cargar imagen</div>'">` : 
+                    `<div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Sin imagen de vista previa</div>`;
 
                 previewBox.innerHTML = `
                     <div class="tarjeta-preview">
                         <div class="visor-imagen-prev">
                             <span class="badge-prev">${categoria}</span>
-                            <img src="${imgUrl}" alt="Preview" onerror="this.src='https://via.placeholder.com/300x300?text=Imagen+No+Valida'">
+                            ${contenidoImagen}
                         </div>
                         <div class="tarjeta-info-prev">
                             <h3>${titulo}</h3>
@@ -232,11 +236,15 @@
             } else {
                 let nombre = document.getElementById('parcheNombre').value || 'Nombre del Parche';
                 let posicion = document.getElementById('parchePosicion').value;
-                let imgUrl = limpiarUrlImagen(document.getElementById('parcheImagen').value) || 'https://via.placeholder.com/100x100?text=Parche';
+                let imgUrl = limpiarUrlImagen(document.getElementById('parcheImagen').value);
+
+                let contenidoImagenParche = imgUrl ? 
+                    `<img src="${imgUrl}" alt="Parche Preview" onerror="this.parentElement.innerHTML='<div style=\'color:#6b7280; font-size:0.8rem;\'>Sin imagen</div>'">` : 
+                    `<div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px;">🛡️</div>`;
 
                 previewBox.innerHTML = `
                     <div class="parche-card-prev">
-                        <img src="${imgUrl}" alt="Parche Preview" onerror="this.src='https://via.placeholder.com/100x100?text=Imagen'">
+                        ${contenidoImagenParche}
                         <h5>${nombre}</h5>
                         <span>Ubicación: ${posicion}</span>
                     </div>
