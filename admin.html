@@ -222,7 +222,9 @@
                 let titulo = document.getElementById('adminTitulo').value || 'Título de ejemplo';
                 let categoria = document.getElementById('adminCategoria').value;
                 let precio = parseFloat(document.getElementById('adminPrecio').value || 24.99).toFixed(2);
-                let imgUrl = limpiarUrlImagen(document.getElementById('adminImagen').value);
+                let imgInputVal = document.getElementById('adminImagen').value;
+                let primeraUrl = imgInputVal.split(',')[0] || '';
+                let imgUrl = limpiarUrlImagen(primeraUrl);
 
                 let contenidoImagen = imgUrl ? 
                     `<img src="${imgUrl}" alt="Preview" onerror="this.parentElement.innerHTML='<div style=\'color:#6b7280; font-size:0.85rem; font-weight:600;\'>Error al cargar imagen</div>'">` : 
@@ -275,13 +277,17 @@
 
             let payload = {};
             if (modoActual === 'camiseta') {
+                // Limpiar espacios alrededor de las comas en los enlaces múltiples antes de enviar
+                let rawImagenes = document.getElementById('adminImagen').value;
+                let imagenesLimpias = rawImagenes.split(',').map(url => url.trim()).filter(Boolean).join(',');
+
                 payload = {
                     tipo: 'camiseta',
                     titulo: document.getElementById('adminTitulo').value,
                     categoria: document.getElementById('adminCategoria').value,
                     precio: document.getElementById('adminPrecio').value,
                     talla: document.getElementById('adminTalla').value,
-                    imagenes: document.getElementById('adminImagen').value
+                    imagenes: imagenesLimpias
                 };
             } else if (modoActual === 'parche') {
                 payload = {
@@ -289,7 +295,7 @@
                     nombre: document.getElementById('parcheNombre').value,
                     categoria: document.getElementById('parcheCategoria').value,
                     posicion: document.getElementById('parchePosicion').value,
-                    imagen: document.getElementById('parcheImagen').value
+                    imagen: document.getElementById('parcheImagen').value.trim()
                 };
             }
 
