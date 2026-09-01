@@ -42,10 +42,10 @@
         h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: var(--primary); text-align: center; }
 
         .tabs-tipo {
-            display: flex; gap: 10px; margin-bottom: 20px; background: var(--bg); padding: 4px; border-radius: 8px;
+            display: flex; gap: 6px; margin-bottom: 20px; background: var(--bg); padding: 4px; border-radius: 8px; flex-wrap: wrap;
         }
         .tab-btn {
-            flex: 1; padding: 10px; border: none; background: transparent; font-weight: 700; font-size: 0.9rem;
+            flex: 1; min-width: 110px; padding: 8px; border: none; background: transparent; font-weight: 700; font-size: 0.8rem;
             border-radius: 6px; cursor: pointer; color: var(--text-muted); transition: all 0.2s;
         }
         .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -109,9 +109,12 @@
             <div class="tabs-tipo">
                 <button class="tab-btn active" id="btnTabCamiseta" onclick="cambiarModoForm('camiseta')">⚽ Camiseta</button>
                 <button class="tab-btn" id="btnTabParche" onclick="cambiarModoForm('parche')">🛡️ Parche</button>
+                <button class="tab-btn" id="btnTabEdicion" onclick="cambiarModoForm('edicion')">🌟 Ed. Especial</button>
+                <button class="tab-btn" id="btnTabOtro" onclick="cambiarModoForm('otro')">📦 Otro</button>
             </div>
 
             <form onsubmit="guardarElemento(event)">
+                <!-- CAMPOS CAMISETA -->
                 <div id="camposCamiseta">
                     <div class="form-group">
                         <label>Título de la Camiseta:</label>
@@ -139,6 +142,7 @@
                     </div>
                 </div>
 
+                <!-- CAMPOS PARCHE -->
                 <div id="camposParche" style="display: none;">
                     <div class="form-group">
                         <label>Nombre del Parche:</label>
@@ -166,6 +170,56 @@
                     </div>
                 </div>
 
+                <!-- CAMPOS EDICIÓN ESPECIAL -->
+                <div id="camposEdicion" style="display: none;">
+                    <div class="form-group">
+                        <label>Título de la Edición Especial:</label>
+                        <input type="text" id="edicionTitulo" placeholder="Ej: Caja Coleccionista Leyendas" oninput="actualizarPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría:</label>
+                        <select id="edicionCategoria" onchange="actualizarPreview()">
+                            <option value="Ediciones Especiales">Ediciones Especiales</option>
+                            <option value="Coleccionables">Coleccionables</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio (€):</label>
+                        <input type="number" step="0.01" id="edicionPrecio" placeholder="49.99" oninput="actualizarPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Tallas / Opciones (si aplica):</label>
+                        <input type="text" id="edicionTalla" value="Única" placeholder="Única">
+                    </div>
+                    <div class="form-group">
+                        <label>Enlace de la Imagen:</label>
+                        <input type="text" id="edicionImagen" placeholder="https://..." oninput="actualizarPreview()">
+                    </div>
+                </div>
+
+                <!-- CAMPOS OTROS -->
+                <div id="camposOtro" style="display: none;">
+                    <div class="form-group">
+                        <label>Título del Producto:</label>
+                        <input type="text" id="otroTitulo" placeholder="Ej: Bufanda Oficial / Llavero" oninput="actualizarPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría:</label>
+                        <select id="otroCategoria" onchange="actualizarPreview()">
+                            <option value="Accesorios">Accesorios</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio (€):</label>
+                        <input type="number" step="0.01" id="otroPrecio" placeholder="12.99" oninput="actualizarPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Enlace de la Imagen:</label>
+                        <input type="text" id="otroImagen" placeholder="https://..." oninput="actualizarPreview()">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn-guardar" id="btnGuardarAdmin">Añadir Camiseta a Google Sheets</button>
             </form>
         </div>
@@ -177,8 +231,8 @@
     </div>
 
     <script>
-        // URL NUEVA ACTUALIZADA
-        const API_URL = 'https://script.google.com/macros/s/AKfycbw1zCmdX_9q5Vmvdid3PTjJiLbc4QNKNejr6cx0KU7Ic4k_LDAcGCVUkqEUOH3usFGG3g/exec';
+        // Enlace actualizado del Apps Script
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwjVnpau_h-hJ7cMfQoGMDmBthVjm3oDnwuFJ4DSeSsVdm7TSSqnmOxt-kf80xoA6BtFg/exec';
         let modoActual = 'camiseta';
 
         function limpiarUrlImagen(url) {
@@ -193,18 +247,33 @@
 
         function cambiarModoForm(modo) {
             modoActual = modo;
+            
+            // Ocultar todos y desactivar botones
+            ['Camiseta', 'Parche', 'Edicion', 'Otro'].forEach(m => {
+                document.getElementById('btnTab' + m).classList.remove('active');
+            });
+            document.getElementById('camposCamiseta').style.display = 'none';
+            document.getElementById('camposParche').style.display = 'none';
+            document.getElementById('camposEdicion').style.display = 'none';
+            document.getElementById('camposOtro').style.display = 'none';
+
+            // Activar el correspondiente
             if (modo === 'camiseta') {
                 document.getElementById('btnTabCamiseta').classList.add('active');
-                document.getElementById('btnTabParche').classList.remove('active');
                 document.getElementById('camposCamiseta').style.display = 'block';
-                document.getElementById('camposParche').style.display = 'none';
                 document.getElementById('btnGuardarAdmin').innerText = 'Añadir Camiseta a Google Sheets';
-            } else {
+            } else if (modo === 'parche') {
                 document.getElementById('btnTabParche').classList.add('active');
-                document.getElementById('btnTabCamiseta').classList.remove('active');
-                document.getElementById('camposCamiseta').style.display = 'none';
                 document.getElementById('camposParche').style.display = 'block';
                 document.getElementById('btnGuardarAdmin').innerText = 'Añadir Parche a Google Sheets';
+            } else if (modo === 'edicion') {
+                document.getElementById('btnTabEdicion').classList.add('active');
+                document.getElementById('camposEdicion').style.display = 'block';
+                document.getElementById('btnGuardarAdmin').innerText = 'Añadir Edición Especial a Sheets';
+            } else if (modo === 'otro') {
+                document.getElementById('btnTabOtro').classList.add('active');
+                document.getElementById('camposOtro').style.display = 'block';
+                document.getElementById('btnGuardarAdmin').innerText = 'Añadir Producto a Sheets';
             }
             actualizarPreview();
         }
@@ -212,11 +281,16 @@
         function actualizarPreview() {
             const previewBox = document.getElementById('previewBox');
             
-            if (modoActual === 'camiseta') {
-                let titulo = document.getElementById('adminTitulo').value || 'Título de ejemplo';
-                let categoria = document.getElementById('adminCategoria').value;
-                let precio = parseFloat(document.getElementById('adminPrecio').value || 24.99).toFixed(2);
-                let imgUrl = limpiarUrlImagen(document.getElementById('adminImagen').value);
+            if (modoActual === 'camiseta' || modoActual === 'edicion' || modoActual === 'otro') {
+                let idTitulo = modoActual === 'camiseta' ? 'adminTitulo' : (modoActual === 'edicion' ? 'edicionTitulo' : 'otroTitulo');
+                let idCat = modoActual === 'camiseta' ? 'adminCategoria' : (modoActual === 'edicion' ? 'edicionCategoria' : 'otroCategoria');
+                let idPrecio = modoActual === 'camiseta' ? 'adminPrecio' : (modoActual === 'edicion' ? 'edicionPrecio' : 'otroPrecio');
+                let idImg = modoActual === 'camiseta' ? 'adminImagen' : (modoActual === 'edicion' ? 'edicionImagen' : 'otroImagen');
+
+                let titulo = document.getElementById(idTitulo).value || 'Título de ejemplo';
+                let categoria = document.getElementById(idCat).value;
+                let precio = parseFloat(document.getElementById(idPrecio).value || 24.99).toFixed(2);
+                let imgUrl = limpiarUrlImagen(document.getElementById(idImg).value);
 
                 let contenidoImagen = imgUrl ? 
                     `<img src="${imgUrl}" alt="Preview" onerror="this.parentElement.innerHTML='<div style=\'color:#6b7280; font-size:0.85rem; font-weight:600;\'>Error al cargar imagen</div>'">` : 
@@ -233,7 +307,6 @@
                             <div style="display: flex; gap: 6px; margin: 4px 0;">
                                 <div style="width:24px; height:24px; border-radius:50%; background:#111827; color:white; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">S</div>
                                 <div style="width:24px; height:24px; border-radius:50%; background:#fff; border:1px solid #ccc; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">M</div>
-                                <div style="width:24px; height:24px; border-radius:50%; background:#fff; border:1px solid #ccc; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">L</div>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
                                 <div class="precio-prev">${precio} €</div>
@@ -242,7 +315,7 @@
                         </div>
                     </div>
                 `;
-            } else {
+            } else if (modoActual === 'parche') {
                 let nombre = document.getElementById('parcheNombre').value || 'Nombre del Parche';
                 let categoria = document.getElementById('parcheCategoria').value;
                 let posicion = document.getElementById('parchePosicion').value;
@@ -278,13 +351,31 @@
                     talla: document.getElementById('adminTalla').value,
                     imagenes: document.getElementById('adminImagen').value
                 };
-            } else {
+            } else if (modoActual === 'parche') {
                 payload = {
                     tipo: 'parche',
                     nombre: document.getElementById('parcheNombre').value,
                     categoria: document.getElementById('parcheCategoria').value,
                     posicion: document.getElementById('parchePosicion').value,
                     imagen: document.getElementById('parcheImagen').value
+                };
+            } else if (modoActual === 'edicion') {
+                payload = {
+                    tipo: 'edicion',
+                    titulo: document.getElementById('edicionTitulo').value,
+                    categoria: document.getElementById('edicionCategoria').value,
+                    precio: document.getElementById('edicionPrecio').value,
+                    talla: document.getElementById('edicionTalla').value,
+                    imagenes: document.getElementById('edicionImagen').value
+                };
+            } else if (modoActual === 'otro') {
+                payload = {
+                    tipo: 'otro',
+                    titulo: document.getElementById('otroTitulo').value,
+                    categoria: document.getElementById('otroCategoria').value,
+                    precio: document.getElementById('otroPrecio').value,
+                    talla: 'Única',
+                    imagenes: document.getElementById('otroImagen').value
                 };
             }
 
@@ -296,22 +387,33 @@
                     body: JSON.stringify(payload)
                 });
 
-                alert(modoActual === 'camiseta' ? "¡Camiseta añadida correctamente!" : "¡Parche añadido correctamente!");
+                alert("¡Elemento añadido correctamente a Google Sheets!");
                 
+                // Limpiar campos según corresponda
                 if (modoActual === 'camiseta') {
                     document.getElementById('adminTitulo').value = '';
                     document.getElementById('adminPrecio').value = '';
                     document.getElementById('adminImagen').value = '';
-                } else {
+                } else if (modoActual === 'parche') {
                     document.getElementById('parcheNombre').value = '';
                     document.getElementById('parcheImagen').value = '';
+                } else if (modoActual === 'edicion') {
+                    document.getElementById('edicionTitulo').value = '';
+                    document.getElementById('edicionPrecio').value = '';
+                    document.getElementById('edicionImagen').value = '';
+                } else if (modoActual === 'otro') {
+                    document.getElementById('otroTitulo').value = '';
+                    document.getElementById('otroPrecio').value = '';
+                    document.getElementById('otroImagen').value = '';
                 }
                 actualizarPreview();
             } catch (error) {
                 console.error("Error al guardar:", error);
                 alert("Hubo un error al guardar.");
             } finally {
-                btn.innerText = modoActual === 'camiseta' ? "Añadir Camiseta a Google Sheets" : "Añadir Parche a Google Sheets";
+                btn.innerText = modoActual === 'camiseta' ? 'Añadir Camiseta a Google Sheets' : 
+                                (modoActual === 'parche' ? 'Añadir Parche a Google Sheets' : 
+                                (modoActual === 'edicion' ? 'Añadir Edición Especial a Sheets' : 'Añadir Producto a Sheets'));
                 btn.disabled = false;
             }
         }
