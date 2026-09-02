@@ -3,330 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Tienda</title>
-    <style>
-        :root {
-            --primary: #111827;
-            --accent: #2563eb;
-            --bg: #f3f4f6;
-            --surface: #ffffff;
-            --text: #111827;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
-            --radius: 8px;
-            --success: #16a34a;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 20px; display: flex; justify-content: center; align-items: center; }
-
-        .admin-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 30px;
-            width: 100%;
-            max-width: 960px;
-        }
-        @media (max-width: 850px) {
-            .admin-wrapper { grid-template-columns: 1fr; }
-        }
-
-        .admin-card {
-            background: var(--surface);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid var(--border);
-        }
-
-        h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: var(--primary); text-align: center; }
-
-        .tabs-tipo {
-            display: flex; gap: 6px; margin-bottom: 20px; background: var(--bg); padding: 4px; border-radius: 8px;
-        }
-        .tab-btn {
-            flex: 1; padding: 8px; border: none; background: transparent; font-weight: 700; font-size: 0.85rem;
-            border-radius: 6px; cursor: pointer; color: var(--text-muted); transition: all 0.2s;
-        }
-        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-        .form-group input, .form-group select {
-            width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-            border-radius: 6px; font-size: 0.95rem; outline: none; background: #fff;
-            transition: border-color 0.2s;
-        }
-        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
-
-        .btn-guardar {
-            background: var(--success); color: white; border: none; width: 100%; padding: 12px;
-            border-radius: var(--radius); font-weight: 700; font-size: 1rem; cursor: pointer; 
-            text-align: center; margin-top: 10px; transition: background 0.2s;
-        }
-        .btn-guardar:hover { background: #15803d; }
-
-        .preview-container {
-            display: flex; flex-direction: column; gap: 15px; justify-content: center;
-        }
-        .preview-title { font-size: 1rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-        
-        .tarjeta-preview {
-            background: var(--surface); border-radius: var(--radius); overflow: hidden;
-            border: 1px solid var(--border); display: flex; flex-direction: column;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); pointer-events: none;
-        }
-        .visor-imagen-prev {
-            position: relative; background: #f3f4f6; height: 220px;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
-        .visor-imagen-prev img { width: 100%; height: 100%; object-fit: cover; }
-        .badge-prev {
-            position: absolute; top: 10px; left: 10px; background: white;
-            padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700;
-            text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .tarjeta-info-prev { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-        .tarjeta-info-prev h3 { font-size: 0.95rem; font-weight: 600; }
-        .precio-prev { font-size: 1.1rem; font-weight: 800; }
-        
-        .parche-card-prev {
-            border: 2px solid var(--accent); border-radius: 8px; padding: 20px; text-align: center;
-            background: #eff6ff; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .parche-card-prev img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; background: #fff; border-radius: 6px; padding: 4px; border: 1px solid var(--border); }
-        .parche-card-prev h5 { font-size: 0.9rem; font-weight: 700; color: var(--text); }
-        .parche-card-prev span { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
-    </style>
+    <title>Panel de Administración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
 </head>
-<body>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-6 transition-colors duration-300">
 
-    <div class="admin-wrapper">
-        <div class="admin-card">
-            <h1>Panel de Administración</h1>
-            
-            <div class="tabs-tipo">
-                <button class="tab-btn active" id="btnTabCamiseta" onclick="cambiarModoForm('camiseta')">⚽ Producto / Camiseta</button>
-                <button class="tab-btn" id="btnTabParche" onclick="cambiarModoForm('parche')">🛡️ Parche</button>
+    <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <h1 class="text-2xl font-bold mb-6">Panel de Administración - Google Sheets API</h1>
+
+        <!-- Selector de Modo: Producto (Camiseta) o Parche -->
+        <div class="flex gap-4 mb-6">
+            <button type="button" onclick="switchMode('product')" id="btn-mode-product" class="px-4 py-2 bg-blue-600 text-white rounded font-semibold transition">Agregar Camiseta</button>
+            <button type="button" onclick="switchMode('patch')" id="btn-mode-patch" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded font-semibold transition">Agregar Parche</button>
+        </div>
+
+        <form id="admin-form" onsubmit="submitForm(event)">
+            <!-- Campos dinámicos según el modo -->
+            <div id="form-fields" class="space-y-4">
+                <!-- Se inyecta mediante JS -->
             </div>
 
-            <form onsubmit="guardarElemento(event)">
-                <!-- CAMPOS PRODUCTO / CAMISETA -->
-                <div id="camposCamiseta">
-                    <div class="form-group">
-                        <label>Título del Producto:</label>
-                        <input type="text" id="adminTitulo" placeholder="Ej: Argentina 1ª Equipación 2026" oninput="actualizarPreview()">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoría / Sección:</label>
-                        <select id="adminCategoria" onchange="actualizarPreview()">
-                            <option value="Selecciones">Selecciones</option>
-                            <option value="Clubes">Clubes</option>
-                            <option value="Retro">Retro</option>
-                            <option value="Ediciones Especiales">Ediciones Especiales</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Precio (€):</label>
-                        <input type="number" step="0.01" id="adminPrecio" placeholder="24.99" oninput="actualizarPreview()">
-                    </div>
-                    <div class="form-group">
-                        <label>Tallas (separadas por comas):</label>
-                        <input type="text" id="adminTalla" value="XS, S, M, L, XL" placeholder="XS, S, M, L, XL">
-                    </div>
-                    <div class="form-group">
-                        <label>Enlace de la Imagen:</label>
-                        <input type="text" id="adminImagen" placeholder="https://..." oninput="actualizarPreview()">
-                    </div>
+            <!-- Live Preview Component -->
+            <div class="mt-6 p-4 border rounded-lg bg-gray-50 dark:bg-gray-700">
+                <h3 class="text-sm font-bold uppercase tracking-wide mb-2 text-gray-500 dark:text-gray-300">Vista Previa en Vivo</h3>
+                <div id="live-preview" class="p-3 bg-white dark:bg-gray-800 rounded border dark:border-gray-600">
+                    <!-- Tarjeta de vista previa -->
                 </div>
+            </div>
 
-                <!-- CAMPOS PARCHE -->
-                <div id="camposParche" style="display: none;">
-                    <div class="form-group">
-                        <label>Nombre del Parche:</label>
-                        <input type="text" id="parcheNombre" placeholder="Ej: Parche Campeón del Mundo" oninput="actualizarPreview()">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoría:</label>
-                        <select id="parcheCategoria" onchange="actualizarPreview()">
-                            <option value="Selecciones">Selecciones</option>
-                            <option value="Clubes">Clubes</option>
-                            <option value="Retro">Retro</option>
-                            <option value="General">General</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Posición:</label>
-                        <select id="parchePosicion" onchange="actualizarPreview()">
-                            <option value="Centro del Pecho">Centro del Pecho</option>
-                            <option value="Hombro Izquierdo">Hombro Izquierdo</option>
-                            <option value="Hombro Derecho">Hombro Derecho</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Enlace de la Imagen del Parche:</label>
-                        <input type="text" id="parcheImagen" placeholder="https://..." oninput="actualizarPreview()">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-guardar" id="btnGuardarAdmin">Añadir a Google Sheets</button>
-            </form>
-        </div>
-
-        <div class="preview-container">
-            <div class="preview-title">👁️ Previsualización en vivo</div>
-            <div id="previewBox"></div>
-        </div>
+            <button type="submit" class="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold transition">Enviar a Google Sheets</button>
+        </form>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz9DbS7_o1No0_mgs-PKeE6vhanGG4whu4EuvfltEmL-BhEs1O03EUNUX9ZtmT2q3mF0w/exec';
-        let modoActual = 'camiseta';
+        const API_URL = "https://script.google.com/macros/s/AKfycbz9DbS7_o1No0_mgs-PKeE6vhanGG4whu4EuvfltEmL-BhEs1O03EUNUX9ZtmT2q3mF0w/exec";[cite: 4]
+        let currentMode = 'product';
 
-        function limpiarUrlImagen(url) {
-            if (!url) return '';
-            url = url.trim();
-            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            }
-            return url;
-        }
+        function switchMode(mode) {
+            currentMode = mode;
+            const container = document.getElementById('form-fields');
+            const btnProd = document.getElementById('btn-mode-product');
+            const btnPatch = document.getElementById('btn-mode-patch');
 
-        function cambiarModoForm(modo) {
-            modoActual = modo;
-            
-            document.getElementById('btnTabCamiseta').classList.remove('active');
-            document.getElementById('btnTabParche').classList.remove('active');
-            document.getElementById('camposCamiseta').style.display = 'none';
-            document.getElementById('camposParche').style.display = 'none';
-
-            if (modo === 'camiseta') {
-                document.getElementById('btnTabCamiseta').classList.add('active');
-                document.getElementById('camposCamiseta').style.display = 'block';
-                document.getElementById('btnGuardarAdmin').innerText = 'Añadir a Google Sheets';
-            } else if (modo === 'parche') {
-                document.getElementById('btnTabParche').classList.add('active');
-                document.getElementById('camposParche').style.display = 'block';
-                document.getElementById('btnGuardarAdmin').innerText = 'Añadir Parche a Google Sheets';
-            }
-            actualizarPreview();
-        }
-
-        function actualizarPreview() {
-            const previewBox = document.getElementById('previewBox');
-            
-            if (modoActual === 'camiseta') {
-                let titulo = document.getElementById('adminTitulo').value || 'Título de ejemplo';
-                let categoria = document.getElementById('adminCategoria').value;
-                let precio = parseFloat(document.getElementById('adminPrecio').value || 24.99).toFixed(2);
-                let imgInputVal = document.getElementById('adminImagen').value;
-                let primeraUrl = imgInputVal.split(',')[0] || '';
-                let imgUrl = limpiarUrlImagen(primeraUrl);
-
-                let contenidoImagen = imgUrl ? 
-                    `<img src="${imgUrl}" alt="Preview" onerror="this.parentElement.innerHTML='<div style=\'color:#6b7280; font-size:0.85rem; font-weight:600;\'>Error al cargar imagen</div>'">` : 
-                    `<div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Sin imagen de vista previa</div>`;
-
-                previewBox.innerHTML = `
-                    <div class="tarjeta-preview">
-                        <div class="visor-imagen-prev">
-                            <span class="badge-prev">${categoria}</span>
-                            ${contenidoImagen}
-                        </div>
-                        <div class="tarjeta-info-prev">
-                            <h3>${titulo}</h3>
-                            <div style="display: flex; gap: 6px; margin: 4px 0;">
-                                <div style="width:24px; height:24px; border-radius:50%; background:#111827; color:white; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">S</div>
-                                <div style="width:24px; height:24px; border-radius:50%; background:#fff; border:1px solid #ccc; font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">M</div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                                <div class="precio-prev">${precio} €</div>
-                                <div style="background:#111827; color:white; padding:6px 12px; border-radius:15px; font-size:0.75rem; font-weight:600;">Comprar</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (modoActual === 'parche') {
-                let nombre = document.getElementById('parcheNombre').value || 'Nombre del Parche';
-                let categoria = document.getElementById('parcheCategoria').value;
-                let posicion = document.getElementById('parchePosicion').value;
-                let imgUrl = limpiarUrlImagen(document.getElementById('parcheImagen').value);
-
-                let contenidoImagenParche = imgUrl ? 
-                    `<img src="${imgUrl}" alt="Parche Preview" onerror="this.parentElement.innerHTML='<div style=\'color:#6b7280; font-size:0.8rem;\'>Sin imagen</div>'">` : 
-                    `<div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px;">🛡️</div>`;
-
-                previewBox.innerHTML = `
-                    <div class="parche-card-prev">
-                        ${contenidoImagenParche}
-                        <h5>${nombre}</h5>
-                        <span>Cat: ${categoria} | Pos: ${posicion}</span>
-                    </div>
-                `;
-            }
-        }
-
-        async function guardarElemento(event) {
-            event.preventDefault();
-            const btn = document.getElementById('btnGuardarAdmin');
-            btn.innerText = "Guardando...";
-            btn.disabled = true;
-
-            let payload = {};
-            if (modoActual === 'camiseta') {
-                let rawImagenes = document.getElementById('adminImagen').value;
-                let imagenesLimpias = rawImagenes.split(',').map(url => url.trim()).filter(Boolean).join(',');
-
-                payload = {
-                    tipo: 'camiseta',
-                    titulo: document.getElementById('adminTitulo').value,
-                    categoria: document.getElementById('adminCategoria').value,
-                    precio: document.getElementById('adminPrecio').value,
-                    talla: document.getElementById('adminTalla').value,
-                    imagenes: imagenesLimpias
-                };
-            } else if (modoActual === 'parche') {
-                payload = {
-                    tipo: 'parche',
-                    nombre: document.getElementById('parcheNombre').value,
-                    categoria: document.getElementById('parcheCategoria').value,
-                    posicion: document.getElementById('parchePosicion').value,
-                    imagen: document.getElementById('parcheImagen').value.trim()
-                };
-            }
-
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(payload)
-                });
-
-                alert("¡Elemento añadido correctamente a Google Sheets!");
+            if (mode === 'product') {
+                btnProd.className = "px-4 py-2 bg-blue-600 text-white rounded font-semibold transition";
+                btnPatch.className = "px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded font-semibold transition";
                 
-                if (modoActual === 'camiseta') {
-                    document.getElementById('adminTitulo').value = '';
-                    document.getElementById('adminPrecio').value = '';
-                    document.getElementById('adminImagen').value = '';
-                } else if (modoActual === 'parche') {
-                    document.getElementById('parcheNombre').value = '';
-                    document.getElementById('parcheImagen').value = '';
-                }
-                actualizarPreview();
-            } catch (error) {
-                console.error("Error al guardar:", error);
-                alert("Hubo un error al guardar.");
-            } finally {
-                btn.innerText = modoActual === 'camiseta' ? 'Añadir a Google Sheets' : 'Añadir Parche a Google Sheets';
-                btn.disabled = false;
+                // Formulario de Camisetas con la columna de IDs de parches permitidos
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Nombre de la Camiseta:</label>
+                        <input type="text" id="p-name" required class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" oninput="updatePreview()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Precio:</label>
+                        <input type="number" id="p-price" required class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" oninput="updatePreview()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">IDs de Parches Permitidos (separados por comas, ej: P01,P03):</label>
+                        <input type="text" id="p-allowed-patches" placeholder="Ej: P01, P05" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" oninput="updatePreview()">
+                    </div>
+                `;
+            } else {
+                btnPatch.className = "px-4 py-2 bg-blue-600 text-white rounded font-semibold transition";
+                btnProd.className = "px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded font-semibold transition";
+                
+                // Formulario de Parches SIN la columna categoría
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium mb-1">ID del Parche:</label>
+                        <input type="text" id="patch-id" required placeholder="Ej: P01" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" oninput="updatePreview()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Nombre del Parche:</label>
+                        <input type="text" id="patch-name" required class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" oninput="updatePreview()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Precio del Parche:</label>
+                        <input type="number" id="patch-price" required class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" oninput="updatePreview()">
+                    </div>
+                `;
+            }
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const preview = document.getElementById('live-preview');
+            if (currentMode === 'product') {
+                const name = document.getElementById('p-name').value || 'Nombre de la Camiseta';
+                const price = document.getElementById('p-price').value || '0';
+                const patches = document.getElementById('p-allowed-patches').value || 'Ninguno';
+                preview.innerHTML = `
+                    <h4 class="font-bold text-lg">${name}</h4>
+                    <p class="text-green-600 dark:text-green-400 font-semibold">Precio: $${price}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Parches permitidos (IDs): <strong>${patches}</strong></p>
+                `;
+            } else {
+                const id = document.getElementById('patch-id').value || 'ID';
+                const name = document.getElementById('patch-name').value || 'Nombre del Parche';
+                const price = document.getElementById('patch-price').value || '0';
+                preview.innerHTML = `
+                    <h4 class="font-bold text-lg">[Parche: ${id}] ${name}</h4>
+                    <p class="text-green-600 dark:text-green-400 font-semibold">Precio: $${price}</p>
+                `;
             }
         }
 
-        actualizarPreview();
+        function submitForm(event) {
+            event.preventDefault();
+            let payload = { mode: currentMode };
+
+            if (currentMode === 'product') {
+                payload.name = document.getElementById('p-name').value;
+                payload.price = document.getElementById('p-price').value;
+                payload.allowedPatches = document.getElementById('p-allowed-patches').value;
+            } else {
+                payload.patchId = document.getElementById('patch-id').value;
+                payload.name = document.getElementById('patch-name').value;
+                payload.price = document.getElementById('patch-price').value;
+            }
+
+            // Envío por POST (no-cors) a Google Sheets API[cite: 4]
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                alert('¡Datos enviados correctamente a Google Sheets!');
+                document.getElementById('admin-form').reset();
+                updatePreview();
+            }).catch(err => {
+                console.error(err);
+                alert('Hubo un error al enviar los datos.');
+            });
+        }
+
+        // Inicializar el formulario por defecto en modo producto
+        switchMode('product');
     </script>
 </body>
 </html>
+```[cite: 4]
