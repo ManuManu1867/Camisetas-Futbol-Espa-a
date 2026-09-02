@@ -277,7 +277,6 @@
 
             let payload = {};
             if (modoActual === 'camiseta') {
-                // Limpiar espacios alrededor de las comas en los enlaces múltiples antes de enviar
                 let rawImagenes = document.getElementById('adminImagen').value;
                 let imagenesLimpias = rawImagenes.split(',').map(url => url.trim()).filter(Boolean).join(',');
 
